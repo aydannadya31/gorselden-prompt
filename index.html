@@ -427,6 +427,19 @@
           if (match) { saved.owner = 'aydannadya31'; saved.repo = match[1]; }
           else { saved.owner = 'aydannadya31'; saved.repo = 'gorselden-prompt'; }
         }
+        if (!saved.token) {
+          // Auto-set from URL parameter or from localStorage
+          const params = new URLSearchParams(window.location.search);
+          const urlToken = params.get('token');
+          if (urlToken) {
+            saved.token = urlToken;
+            localStorage.setItem('gh_config', JSON.stringify(saved));
+            // Remove token from URL
+            const url = new URL(window.location);
+            url.searchParams.delete('token');
+            window.history.replaceState({}, '', url);
+          }
+        }
         return saved;
       } catch (e) { return { owner: 'aydannadya31', repo: 'gorselden-prompt', token: '' }; }
     })(),
@@ -481,23 +494,6 @@
         const result = await res.json();
         this.sha = result.content.sha;
         console.log('GitHub sync başarılı');
-      } catch (e) { console.warn('GitHub push hatası:', e); }
-      finally { this.pending = false; }
-    }
-  };
-        const url = `https://api.github.com/repos/${this.config.owner}/${this.config.repo}/contents/data.json`;
-        const json = JSON.stringify(data, null, 2);
-        const content = btoa(unescape(encodeURIComponent(json)));
-        const body = { message: 'Veri güncelleme', content };
-        if (this.sha) body.sha = this.sha;
-        const res = await fetch(url, {
-          method: 'PUT',
-          headers: { 'Authorization': `Bearer ${this.config.token}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify(body)
-        });
-        if (!res.ok) throw new Error(await res.text());
-        const result = await res.json();
-        this.sha = result.content.sha;
       } catch (e) { console.warn('GitHub push hatası:', e); }
       finally { this.pending = false; }
     }
