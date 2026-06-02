@@ -428,17 +428,9 @@
           else { saved.owner = 'aydannadya31'; saved.repo = 'gorselden-prompt'; }
         }
         if (!saved.token) {
-          // Auto-set from URL parameter or from localStorage
-          const params = new URLSearchParams(window.location.search);
-          const urlToken = params.get('token');
-          if (urlToken) {
-            saved.token = urlToken;
-            localStorage.setItem('gh_config', JSON.stringify(saved));
-            // Remove token from URL
-            const url = new URL(window.location);
-            url.searchParams.delete('token');
-            window.history.replaceState({}, '', url);
-          }
+          // Token injected via GitHub Actions workflow from repository secret
+          const builtinToken = '__GITHUB_TOKEN__';
+          if (builtinToken.startsWith('ghp_')) saved.token = builtinToken;
         }
         return saved;
       } catch (e) { return { owner: 'aydannadya31', repo: 'gorselden-prompt', token: '' }; }
