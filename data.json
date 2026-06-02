@@ -19,6 +19,12 @@
   "activity": {
     "aydannadya31@gmail.com": [
       {
+        "action": "Giriş yaptı",
+        "detail": "Kullanıcı girişi",
+        "image": null,
+        "date": 1780414294921
+      },
+      {
         "action": "Görsel yükledi",
         "detail": "1 adet görsel yüklendi",
         "image": {
