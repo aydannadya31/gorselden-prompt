@@ -1422,6 +1422,9 @@ OUTPUT ONLY THE PROMPT TEXT IN ENGLISH. No greetings, no explanations, no commen
         renderHistorySidebar();
       }
 
+      loadingBar.classList.remove('active');
+      generateBtn.disabled = false;
+
     } catch (e) {
       loadingBar.classList.remove('active');
       generateBtn.disabled = false;
