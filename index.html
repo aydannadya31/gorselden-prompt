@@ -405,13 +405,27 @@
   const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
   // ====== GITHUB SYNC LAYER ======
+  function b64Encode(str) {
+    // UTF-8 safe base64 encoding
+    const bytes = new TextEncoder().encode(str);
+    const bin = Array.from(bytes, b => String.fromCharCode(b)).join('');
+    return btoa(bin);
+  }
+  function b64Decode(str) {
+    const bin = atob(str);
+    const bytes = Uint8Array.from(bin, c => c.charCodeAt(0));
+    return new TextDecoder().decode(bytes);
+  }
+
   const GHSync = {
     config: (() => {
       const saved = JSON.parse(localStorage.getItem('gh_config')) || {};
       // Auto-detect from GitHub Pages URL
       if (!saved.owner || !saved.repo) {
-        const match = window.location.hostname === 'localhost' ? null : window.location.pathname.match(/^\/([^\/]+)/);
+        const path = window.location.pathname;
+        const match = path.match(/^\/([^\/]+)/);
         if (match) { saved.owner = 'aydannadya31'; saved.repo = match[1]; }
+        else { saved.owner = 'aydannadya31'; saved.repo = 'gorselden-prompt'; }
       }
       return saved;
     })(),
@@ -430,7 +444,7 @@
         if (!res.ok) return;
         const result = await res.json();
         this.sha = result.sha;
-        const remote = JSON.parse(atob(result.content));
+        const remote = JSON.parse(b64Decode(result.content));
         if (remote.users) localStorage.setItem('gp_users', JSON.stringify(remote.users));
         if (remote.history) localStorage.setItem('gp_history', JSON.stringify(remote.history));
         if (remote.activity) localStorage.setItem('gp_activity', JSON.stringify(remote.activity));
@@ -439,7 +453,11 @@
     },
 
     async push() {
-      if (!this.config.token || this.pending) return;
+      if (!this.config.token) {
+        console.warn('GitHub token ayarlanmamış, veriler sadece localStorage\'a kaydedildi. Yönetici panelinden GitHub ayarlarını yapılandırın.');
+        return;
+      }
+      if (this.pending) return;
       if (!this.config.owner || !this.config.repo) return;
       this.pending = true;
       try {
@@ -449,6 +467,23 @@
           activity: JSON.parse(localStorage.getItem('gp_activity') || '{}'),
           notifications: JSON.parse(localStorage.getItem('gp_notifications') || '[]')
         };
+        const url = `https://api.github.com/repos/${this.config.owner}/${this.config.repo}/contents/data.json`;
+        const content = b64Encode(JSON.stringify(data, null, 2));
+        const body = { message: 'Veri güncelleme', content };
+        if (this.sha) body.sha = this.sha;
+        const res = await fetch(url, {
+          method: 'PUT',
+          headers: { 'Authorization': `Bearer ${this.config.token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+        if (!res.ok) throw new Error(await res.text());
+        const result = await res.json();
+        this.sha = result.content.sha;
+        console.log('GitHub sync başarılı');
+      } catch (e) { console.warn('GitHub push hatası:', e); }
+      finally { this.pending = false; }
+    }
+  };
         const url = `https://api.github.com/repos/${this.config.owner}/${this.config.repo}/contents/data.json`;
         const json = JSON.stringify(data, null, 2);
         const content = btoa(unescape(encodeURIComponent(json)));
