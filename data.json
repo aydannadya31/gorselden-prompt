@@ -5,7 +5,17 @@
       "created": 1780414060232
     }
   },
-  "history": {},
+  "history": {
+    "aydannadya31@gmail.com": [
+      {
+        "model": "nano-gemini",
+        "ref": "yes",
+        "prompt": "\"Referans görselindeki modelin yüzü kesinlikle değişmeden ve bozulmadan kimliği kitli şekilde anatomik bozulmalar olmadan 4k yüksek çözünürlüklü ve yüksek kalite detaylar ile aşağıda verilmiş prompt detaylarına göre yeniden düzenlenecektir.\"\n\na person with straight and sleek medium brown hair, wearing neutral-toned clothing, very smooth, glossy fabric, possibly silk or latex, face clearly visible, front-facing, three-quarter body framing, subject positioned at right side, natural balanced lighting with smooth tonal range, color palette: #d0d0d0, #d0b0d0, #f0f0f0, balanced color temperature, bright background framing a darker central subject, landscape scene with distinct horizon line, balanced sky and ground exposure, soft focus, smooth gradients, minimal texture, vertical landscape composition, aspect ratio 0.56, 4K, ultra high definition, highly detailed, sharp focus, photorealistic, professional photography, premium quality, ultra high resolution image with exceptional clarity",
+        "source": "İstemci (Canvas)",
+        "date": 1780414114724
+      }
+    ]
+  },
   "activity": {
     "aydannadya31@gmail.com": [
       {
