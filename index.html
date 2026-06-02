@@ -419,15 +419,16 @@
 
   const GHSync = {
     config: (() => {
-      const saved = JSON.parse(localStorage.getItem('gh_config')) || {};
-      // Auto-detect from GitHub Pages URL
-      if (!saved.owner || !saved.repo) {
-        const path = window.location.pathname;
-        const match = path.match(/^\/([^\/]+)/);
-        if (match) { saved.owner = 'aydannadya31'; saved.repo = match[1]; }
-        else { saved.owner = 'aydannadya31'; saved.repo = 'gorselden-prompt'; }
-      }
-      return saved;
+      try {
+        const saved = JSON.parse(localStorage.getItem('gh_config')) || {};
+        if (!saved.owner || !saved.repo) {
+          const path = window.location.pathname;
+          const match = path.match(/^\/([^\/]+)/);
+          if (match) { saved.owner = 'aydannadya31'; saved.repo = match[1]; }
+          else { saved.owner = 'aydannadya31'; saved.repo = 'gorselden-prompt'; }
+        }
+        return saved;
+      } catch (e) { return { owner: 'aydannadya31', repo: 'gorselden-prompt', token: '' }; }
     })(),
     sha: null, pending: false,
 
@@ -1890,10 +1891,16 @@ renderUsers();renderNotifs();renderActivities();
 
     // Admin login
     if (email === 'admin' && pass === 'Ag1453ag!') {
-      setSession('admin');
-      hideGate();
-      renderTopBar();
-      openAdminPanel();
+      try {
+        setSession('admin');
+        hideGate();
+        renderTopBar();
+        openAdminPanel();
+      } catch (e) {
+        console.error('Admin giriş hatası:', e);
+        gateError.textContent = 'Giriş yapılırken hata oluştu: ' + e.message;
+        gateError.style.display = 'block';
+      }
       return;
     }
 
