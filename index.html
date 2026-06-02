@@ -406,7 +406,15 @@
 
   // ====== GITHUB SYNC LAYER ======
   const GHSync = {
-    config: JSON.parse(localStorage.getItem('gh_config')) || { owner: '', repo: '', token: '' },
+    config: (() => {
+      const saved = JSON.parse(localStorage.getItem('gh_config')) || {};
+      // Auto-detect from GitHub Pages URL
+      if (!saved.owner || !saved.repo) {
+        const match = window.location.hostname === 'localhost' ? null : window.location.pathname.match(/^\/([^\/]+)/);
+        if (match) { saved.owner = 'aydannadya31'; saved.repo = match[1]; }
+      }
+      return saved;
+    })(),
     sha: null, pending: false,
 
     saveConfig() {
