@@ -1637,12 +1637,6 @@ h1{font-size:22px;margin-bottom:4px}
 .act-item .act-text{font-size:13px;color:#333;white-space:pre-wrap;line-height:1.5;flex:1}
 .act-item .act-text .prompt-label{font-weight:600;color:#667eea;font-size:11px;margin-bottom:2px}
 .filter-select{width:100%;padding:9px 12px;border:1.5px solid #d0d5dd;border-radius:8px;font-size:13px;margin-bottom:14px;background:#fff}
-.gh-field{margin-bottom:14px}
-.gh-field label{display:block;font-size:12px;font-weight:600;color:#888;margin-bottom:4px}
-.gh-field input{width:100%;padding:9px 12px;border:1.5px solid #d0d5dd;border-radius:8px;font-size:13px}
-.gh-status{font-size:12px;margin-top:8px;padding:8px;border-radius:6px;display:none}
-.gh-status.ok{display:block;background:#eafaf1;color:#27ae60}
-.gh-status.err{display:block;background:#fdedec;color:#e74c3c}
 .lightbox{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);z-index:9999;justify-content:center;align-items:center;flex-direction:column}
 .lightbox.active{display:flex}
 .lightbox img{max-width:90vw;max-height:80vh;border-radius:8px;box-shadow:0 4px 30px rgba(0,0,0,.5);object-fit:contain}
@@ -1657,7 +1651,6 @@ h1{font-size:22px;margin-bottom:4px}
   <button class="active" data-tab="users">Kullanıcılar</button>
   <button data-tab="notifications">Bildirimler <span id="notifBadge" style="background:#e74c3c;color:#fff;border-radius:10px;padding:1px 8px;font-size:11px;margin-left:4px">0</span></button>
   <button data-tab="activity">Etkinlikler</button>
-  <button data-tab="github">GitHub</button>
 </div>
 <div class="tab active" id="tab-users">
   <table class="admin-table"><thead><tr><th>E-posta</th><th>Şifre</th><th style="width:130px">İşlem</th></tr></thead><tbody id="usersBody"></tbody></table>
@@ -1672,16 +1665,6 @@ h1{font-size:22px;margin-bottom:4px}
   <div id="activityList"></div>
   <div class="empty-state" id="activityEmpty">Etkinlik bulunmuyor.</div>
 </div>
-<div class="tab" id="tab-github">
-  <h3 style="font-size:15px;margin-bottom:14px;">☁️ GitHub Senkronizasyonu</h3>
-  <p style="font-size:12px;color:#888;margin-bottom:16px;">Tüm veriler (kullanıcılar, geçmiş, etkinlikler) <code>data.json</code> dosyasında GitHub repo üzerinde saklanır. Aşağıya repo bilgilerini ve bir <strong>Personal Access Token</strong> girin.</p>
-  <div class="gh-field"><label>Repo Sahibi</label><input type="text" id="ghOwner" placeholder="örn: aydannadya31"></div>
-  <div class="gh-field"><label>Repo Adı</label><input type="text" id="ghRepo" placeholder="örn: görselden-prompt"></div>
-  <div class="gh-field"><label>Personal Access Token (repo yetkili)</label><input type="password" id="ghToken" placeholder="github_pat_..."></div>
-  <button class="btn-xs success" id="ghSaveBtn" style="padding:8px 20px;font-size:13px;">Kaydet ve Senkronize Et</button>
-  <button class="btn-xs" id="ghTestBtn" style="padding:8px 20px;font-size:13px;margin-left:6px;">Bağlantıyı Test Et</button>
-  <div class="gh-status" id="ghStatus"></div>
-</div>
 <div class="lightbox" id="lightbox">
   <button class="lb-close" id="lbClose">&times;</button>
   <img id="lbImage" src="" alt="büyük görsel">
@@ -1690,7 +1673,6 @@ h1{font-size:22px;margin-bottom:4px}
 <script>
 const LS = localStorage;
 function getUsers(){try{return JSON.parse(LS.getItem('gp_users'))||{}}catch{return{}}}
-function saveUsers(u){LS.setItem('gp_users',JSON.stringify(u))}
 function saveUsers(u){LS.setItem('gp_users',JSON.stringify(u));if(window.opener&&window.opener.GHSync)window.opener.GHSync.push()}
 function getNotifications(){try{return JSON.parse(LS.getItem('gp_notifications'))||[]}catch{return[]}}
 function getActivities(){try{return JSON.parse(LS.getItem('gp_activity'))||{}}catch{return{}}}
@@ -1807,53 +1789,6 @@ function switchTab(tab){
   if(tab==='users') renderUsers();
   if(tab==='notifications') renderNotifs();
   if(tab==='activity') renderActivities();
-  if(tab==='github') renderGitHub();
-}
-
-function renderGitHub(){
-  const cfg=JSON.parse(LS.getItem('gh_config'))||{owner:'',repo:'',token:''};
-  document.getElementById('ghOwner').value=cfg.owner||'';
-  document.getElementById('ghRepo').value=cfg.repo||'';
-  document.getElementById('ghToken').value=cfg.token||'';
-}
-
-document.getElementById('ghSaveBtn').addEventListener('click',async ()=>{
-  const owner=document.getElementById('ghOwner').value.trim();
-  const repo=document.getElementById('ghRepo').value.trim();
-  const token=document.getElementById('ghToken').value.trim();
-  if(!owner||!repo){showGHStatus('Lütfen repo sahibi ve repo adını girin.','err');return}
-  LS.setItem('gh_config',JSON.stringify({owner,repo,token}));
-  showGHStatus('✅ Ayarlar kaydedildi. Ana sayfadan veriler çekiliyor...','ok');
-  // Trigger parent page to pull data
-  if(window.opener&&window.opener.GHSync){
-    window.opener.GHSync.config=JSON.parse(LS.getItem('gh_config'));
-    await window.opener.GHSync.pull();
-    showGHStatus('✅ Veriler başarıyla senkronize edildi.','ok');
-  }else{
-    showGHStatus('✅ Ayarlar kaydedildi. Sayfayı yenileyerek senkronize edin.','ok');
-  }
-});
-
-document.getElementById('ghTestBtn').addEventListener('click',async ()=>{
-  const owner=document.getElementById('ghOwner').value.trim();
-  const repo=document.getElementById('ghRepo').value.trim();
-  const token=document.getElementById('ghToken').value.trim();
-  if(!owner||!repo){showGHStatus('Lütfen repo sahibi ve repo adını girin.','err');return}
-  showGHStatus('Bağlantı test ediliyor...','ok');
-  try{
-    const headers={};
-    if(token) headers['Authorization']='Bearer '+token;
-    const res=await fetch('https://api.github.com/repos/'+owner+'/'+repo,{headers});
-    if(!res.ok) throw new Error('HTTP '+res.status);
-    showGHStatus('✅ Repo bulundu! Veri erişimi başarılı.','ok');
-  }catch(e){
-    showGHStatus('❌ Repo bulunamadı veya erişim hatası: '+e.message,'err');
-  }
-});
-
-function showGHStatus(msg,type){
-  const el=document.getElementById('ghStatus');
-  el.textContent=msg;el.className='gh-status '+type;el.style.display='block';
 }
 
 document.querySelectorAll('.tabs button').forEach(btn=>{
