@@ -19,11 +19,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Inject GitHub token from secrets
+      - name: Inject tokens from secrets
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          sed -i "s|__GITHUB_TOKEN__|${GH_TOKEN}|g" index.html
+          sed -i "s|__GITHUB_TOKEN__|${GH_TOKEN}|g; s|__HF_TOKEN__|${HF_TOKEN}|g" index.html
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

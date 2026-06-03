@@ -1138,6 +1138,40 @@ OUTPUT ONLY THE PROMPT TEXT IN ENGLISH. No greetings, no explanations, no commen
     return description;
   }
 
+  // ====== HUGGING FACE ANALYSIS ======
+  const HF_TOKEN = '__HF_TOKEN__';
+
+  async function analyzeImageWithHF(base64Image) {
+    const token = HF_TOKEN.startsWith('hf_') ? HF_TOKEN : null;
+    if (!token) throw new Error('HF token yok');
+
+    const blobResp = await fetch(base64Image);
+    const blob = await blobResp.blob();
+
+    const resp = await fetch('https://api-inference.huggingface.co/models/Salesforce/blip-image-captioning-base', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/octet-stream' },
+      body: blob
+    });
+
+    if (!resp.ok) {
+      const err = await resp.text();
+      if (resp.status === 503) throw new Error('HF model yükleniyor, birazdan tekrar deneyin');
+      throw new Error('HF hatası: ' + err.substring(0, 100));
+    }
+
+    const result = await resp.json();
+    let caption = '';
+    if (Array.isArray(result) && result[0]?.generated_text) caption = result[0].generated_text;
+    else if (result.generated_text) caption = result.generated_text;
+
+    if (!caption) throw new Error('HF açıklama üretemedi');
+
+    // Caption'u detaylı bir prompt'a çevir
+    const enhanced = `A highly detailed photograph. ${caption}. Professional photography, 4K, ultra high resolution, sharp focus, photorealistic, high quality, detailed textures, natural lighting, cinematic composition.`;
+    return enhanced;
+  }
+
   async function analyzeImage(base64Image, mimeType) {
     const errors = [];
 
@@ -1146,6 +1180,13 @@ OUTPUT ONLY THE PROMPT TEXT IN ENGLISH. No greetings, no explanations, no commen
       if (result) return { text: result, source: 'Gemini' };
     } catch (e) {
       errors.push('Gemini: ' + e.message);
+    }
+
+    try {
+      const result = await analyzeImageWithHF(base64Image);
+      return { text: result, source: 'Hugging Face (BLIP)' };
+    } catch (e) {
+      errors.push('Hugging Face: ' + e.message);
     }
 
     try {
@@ -1392,7 +1433,7 @@ OUTPUT ONLY THE PROMPT TEXT IN ENGLISH. No greetings, no explanations, no commen
 
       const formatted = formatModelPrompt(model, result.text.trim());
       const finalPrompt = useRef === 'yes' ? buildRefPrefix() + '\n\n' + formatted : formatted;
-      const badges = { 'Gemini': '🤖 Gemini AI', 'İstemci (Canvas)': '🧠 Yerel Analiz (Canvas+MobileNet)' };
+      const badges = { 'Gemini': '🤖 Gemini AI', 'Hugging Face (BLIP)': '🤗 Hugging Face (BLIP)', 'İstemci (Canvas)': '🧠 Yerel Analiz (Canvas+MobileNet)' };
       const serviceBadge = badges[result.source] || result.source;
       const syntaxHint = modelSyntaxHints[model] || '';
       const helpHtml = syntaxHint ? `<hr style="margin:16px 0;border:none;border-top:1px solid #e0e4ea;">
