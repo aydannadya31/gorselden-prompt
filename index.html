@@ -689,7 +689,7 @@ OUTPUT ONLY THE PROMPT TEXT IN ENGLISH. No greetings, no explanations, no commen
 
     if (!resp.ok) {
       const errText = await resp.text();
-      throw new Error('Gemini kota aşıldı: ' + errText.substring(0, 120));
+      throw new Error('Gemini hatası (' + resp.status + '): ' + errText.substring(0, 120));
     }
 
     const data = await resp.json();
@@ -697,17 +697,62 @@ OUTPUT ONLY THE PROMPT TEXT IN ENGLISH. No greetings, no explanations, no commen
   }
 
   function analyzeGridRegions(ctx, w, h) {
-    const cols = 8, rows = 8;
+    const cols = 12, rows = 12;
     const cw = Math.floor(w / cols), rh = Math.floor(h / rows);
     const regions = [];
-
     for (let r = 0; r < rows; r++) {
       for (let c = 0; c < cols; c++) {
         const data = ctx.getImageData(c * cw, r * rh, cw, rh).data;
-        let sumR = 0, sumG = 0, sumB = 0, count = 0;
+        let sumR = 0, sumG = 0, sumB = 0, sumS = 0, count = 0;
         for (let i = 0; i < data.length; i += 4) {
-          sumR += data[i]; sumG += data[i + 1]; sumB += data[i + 2]; count++;
+          sumR += data[i]; sumG += data[i + 1]; sumB += data[i + 2];
+          const max = Math.max(data[i], data[i+1], data[i+2]);
+          const min = Math.min(data[i], data[i+1], data[i+2]);
+          sumS += (max - min) / (max || 1);
+          count++;
         }
+        regions.push({ r: sumR / count, g: sumG / count, b: sumB / count, s: sumS / count, row: r, col: c });
+      }
+    }
+    return regions;
+  }
+
+  function describeComposition(regions, w, h) {
+    const centerRowStart = 3, centerRowEnd = 8, centerColStart = 3, centerColEnd = 8;
+    const centerRegions = regions.filter(r => r.row >= centerRowStart && r.row <= centerRowEnd && r.col >= centerColStart && r.col <= centerColEnd);
+    const edgeRegions = regions.filter(r => r.row < centerRowStart || r.row > centerRowEnd || r.col < centerColStart || r.col > centerColEnd);
+
+    const centerBright = centerRegions.reduce((s, r) => s + (r.r + r.g + r.b) / 3, 0) / centerRegions.length;
+    const edgeBright = edgeRegions.reduce((s, r) => s + (r.r + r.g + r.b) / 3, 0) / edgeRegions.length;
+
+    const parts = [];
+    const diff = centerBright - edgeBright;
+    if (diff > 25) parts.push('center-focused composition with bright main subject against darker surroundings, creating a vignette-like emphasis on the focal point');
+    else if (diff > 10) parts.push('slightly center-weighted composition with the main subject illuminated against a moderately darker background, drawing attention naturally');
+    else if (diff < -25) parts.push('bright peripheral areas framing a darker central region, creating an inverted vignette or spotlight effect around the edges');
+    else if (diff < -10) parts.push('slightly brighter edges than center, suggesting a wide-angle environmental composition');
+    else parts.push('well-balanced composition with even luminance distribution across the entire frame, creating a harmonious visual flow');
+
+    const thirdsX = w * 0.333, thirdsY = h * 0.333;
+    const leftThird = regions.filter(r => (r.col * (w/12)) < thirdsX);
+    const rightThird = regions.filter(r => (r.col * (w/12)) > w * 0.667);
+    const topThird = regions.filter(r => (r.row * (h/12)) < thirdsY);
+    const bottomThird = regions.filter(r => (r.row * (h/12)) > h * 0.667);
+
+    const lBright = leftThird.reduce((s, r) => s + (r.r + r.g + r.b) / 3, 0) / (leftThird.length || 1);
+    const rBright = rightThird.reduce((s, r) => s + (r.r + r.g + r.b) / 3, 0) / (rightThird.length || 1);
+    const tBright = topThird.reduce((s, r) => s + (r.r + r.g + r.b) / 3, 0) / (topThird.length || 1);
+    const bBright = bottomThird.reduce((s, r) => s + (r.r + r.g + r.b) / 3, 0) / (bottomThird.length || 1);
+
+    if (Math.abs(lBright - rBright) > 30) {
+      parts.push(lBright > rBright ? 'left side is notably brighter, suggesting directional lighting from the left' : 'right side is notably brighter, suggesting directional lighting from the right');
+    }
+    if (Math.abs(tBright - bBright) > 30) {
+      parts.push(tBright > bBright ? 'upper portion is significantly brighter, typical of sky or overhead lighting' : 'lower portion is significantly brighter, suggesting reflective ground or foreground lighting');
+    }
+
+    return parts.join('. ');
+  }
         regions.push({ r: sumR / count, g: sumG / count, b: sumB / count, row: r, col: c });
       }
     }
@@ -732,21 +777,46 @@ OUTPUT ONLY THE PROMPT TEXT IN ENGLISH. No greetings, no explanations, no commen
 
   function describeLighting(imageData, w, h) {
     const data = imageData.data;
-    let highlights = 0, midtones = 0, shadows = 0;
+    let highlights = 0, midtones = 0, shadows = 0, blacks = 0, whites = 0;
+    let sumL = 0, sumSat = 0;
+    const total = data.length / 4;
     for (let i = 0; i < data.length; i += 4) {
-      const b = (data[i] + data[i + 1] + data[i + 2]) / 3;
-      if (b > 200) highlights++;
-      else if (b > 100) midtones++;
-      else shadows++;
+      const r = data[i], g = data[i + 1], b = data[i + 2];
+      const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+      sumL += lum;
+      const max = Math.max(r, g, b), min = Math.min(r, g, b);
+      sumSat += (max - min) / (max || 1);
+      if (lum > 230) whites++;
+      else if (lum > 180) highlights++;
+      else if (lum > 80) midtones++;
+      else if (lum > 25) shadows++;
+      else blacks++;
     }
-    const total = highlights + midtones + shadows;
+    const avgLum = sumL / total;
+    const avgSat = sumSat / total;
+    const whRatio = whites / total;
+    const blRatio = blacks / total;
+    const hlRatio = highlights / total;
+    const shRatio = shadows / total;
 
     const parts = [];
-    if (highlights / total > 0.35) parts.push('bright high-key lighting with soft highlights');
-    else if (shadows / total > 0.35) parts.push('dramatic low-key lighting with deep shadows');
-    else parts.push('natural balanced lighting with smooth tonal range');
+    if (whRatio > 0.15) parts.push('very bright high-key lighting with blown-out highlights, giving an airy ethereal look');
+    else if (hlRatio > 0.35) parts.push('bright high-key lighting with soft highlights, creating a light and airy atmosphere');
+    else if (shRatio > 0.40) parts.push('dramatic low-key lighting with deep rich shadows, creating strong chiaroscuro contrast and moody atmosphere');
+    else if (blRatio > 0.10) parts.push('extremely dark low-key lighting with deep blacks and minimal shadow detail, evoking a noir aesthetic');
+    else if (hlRatio > 0.25 && shRatio > 0.25) parts.push('high contrast lighting with both bright highlights and deep shadows, creating dramatic punch and visual impact');
+    else parts.push('soft natural balanced lighting with smooth tonal gradations across the entire dynamic range');
 
-    return parts.join(', ');
+    if (avgLum > 180) parts.push('overall bright exposure, well-lit scene');
+    else if (avgLum > 130) parts.push('moderate exposure, neutral brightness');
+    else if (avgLum > 80) parts.push('relatively dark exposure, moody ambiance');
+    else parts.push('very dark exposure, predominantly shadowy');
+
+    if (avgSat > 0.35) parts.push('vibrant saturated colors with rich pigment intensity');
+    else if (avgSat > 0.2) parts.push('moderately saturated natural colors');
+    else parts.push('desaturated muted tones, possibly faded film look or atmospheric haze');
+
+    return parts.join('. ');
   }
 
   function describeColors(ctx, w, h) {
@@ -754,35 +824,54 @@ OUTPUT ONLY THE PROMPT TEXT IN ENGLISH. No greetings, no explanations, no commen
     const colorBuckets = {};
     for (let i = 0; i < data.length; i += 8) {
       const r = data[i], g = data[i + 1], b = data[i + 2];
-      const key = `${Math.round(r/32)*32},${Math.round(g/32)*32},${Math.round(b/32)*32}`;
+      const key = `${Math.round(r/16)*16},${Math.round(g/16)*16},${Math.round(b/16)*16}`;
       colorBuckets[key] = (colorBuckets[key] || 0) + 1;
     }
     const sorted = Object.entries(colorBuckets).sort((a, b) => b[1] - a[1]);
-    const top3 = sorted.slice(0, 3);
-    const top1 = top3[0][0].split(',').map(Number);
+    const totalP = sorted.reduce((s, [, c]) => s + c, 0);
+    const top5 = sorted.slice(0, 5);
 
     const parts = [];
-    const hexColors = top3.map(([key]) => {
+
+    const namedColors = top5.map(([key]) => {
       const [r, g, b] = key.split(',').map(Number);
-      return '#' + [Math.min(255, r + 16), Math.min(255, g + 16), Math.min(255, b + 16)]
-        .map(v => v.toString(16).padStart(2, '0')).join('');
+      return { name: colorName(r, g, b), pct: (100 / totalP) };
+    });
+    const dominant = namedColors[0];
+    parts.push(`dominant color: ${dominant.name}, with secondary tones of ${namedColors.slice(1, 4).map(c => c.name).join(', ')}`);
+
+    const hexColors = top5.map(([key]) => {
+      const [r, g, b] = key.split(',').map(Number);
+      return '#' + [r, g, b].map(v => Math.min(255, v + 8).toString(16).padStart(2, '0')).join('');
     });
     parts.push(`color palette: ${hexColors.join(', ')}`);
 
-    const avgR = sorted.reduce((s, [k, c]) => s + parseInt(k.split(',')[0]) * c, 0) / sorted.reduce((s, [, c]) => s + c, 0);
-    const avgG = sorted.reduce((s, [k, c]) => s + parseInt(k.split(',')[1]) * c, 0) / sorted.reduce((s, [, c]) => s + c, 0);
-    const avgB = sorted.reduce((s, [k, c]) => s + parseInt(k.split(',')[2]) * c, 0) / sorted.reduce((s, [, c]) => s + c, 0);
+    const avgR = sorted.reduce((s, [k, c]) => s + parseInt(k.split(',')[0]) * c, 0) / totalP;
+    const avgG = sorted.reduce((s, [k, c]) => s + parseInt(k.split(',')[1]) * c, 0) / totalP;
+    const avgB = sorted.reduce((s, [k, c]) => s + parseInt(k.split(',')[2]) * c, 0) / totalP;
 
-    if (avgR > avgG + 20 && avgR > avgB + 20) parts.push('warm reddish tones');
-    else if (avgG > avgR + 20 && avgG > avgB + 20) parts.push('natural green tones');
-    else if (avgB > avgR + 20 && avgB > avgG + 20) parts.push('cool blue tones');
-    else parts.push('balanced color temperature');
+    const warmCool = (avgR - avgB);
+    if (warmCool > 15) parts.push('warm color temperature dominates, with amber and golden undertones creating a cozy inviting feel');
+    else if (warmCool < -15) parts.push('cool color temperature dominates, with blue and cyan undertones creating a calm crisp atmosphere');
+    else parts.push('neutral color temperature with balanced warm-cool harmony');
 
-    return parts.join(', ');
+    const isMono = sorted[0][1] / totalP > 0.6;
+    if (isMono) parts.push('monochromatic color scheme with subtle tonal variations');
+    else {
+      const firstHue = sorted[0][0].split(',').map(Number);
+      const [fr, fg, fb] = firstHue;
+      const maxColor = Math.max(fr, fg, fb);
+      if (fr === maxColor && fg > fb * 0.7) parts.push('warm analogous color harmony with reds, oranges and yellows');
+      else if (fg === maxColor) parts.push('natural green-dominant harmony suggesting organic or outdoor setting');
+      else if (fb === maxColor) parts.push('cool blue-dominant harmony suggesting water, sky or nighttime setting');
+      else parts.push('balanced color distribution across the spectrum');
+    }
+
+    return parts.join('. ');
   }
 
   function detectHorizon(regions, w, h) {
-    const rows = 8;
+    const rows = 12;
     const rowBrightness = [];
     for (let r = 0; r < rows; r++) {
       const rowRegs = regions.filter(reg => reg.row === r);
@@ -794,12 +883,12 @@ OUTPUT ONLY THE PROMPT TEXT IN ENGLISH. No greetings, no explanations, no commen
       const diff = Math.abs(rowBrightness[r] - rowBrightness[r - 1]);
       if (diff > maxDiff) { maxDiff = diff; horizonRow = r; }
     }
-    return maxDiff > 40 ? horizonRow : -1;
+    return maxDiff > 35 ? horizonRow : -1;
   }
 
   function describeScene(regions, w, h, img, ctx) {
     const parts = [];
-    const rows = 8;
+    const rows = 12;
     const rowBrights = [];
     for (let r = 0; r < rows; r++) {
       const rowRegs = regions.filter(reg => reg.row === r);
@@ -807,56 +896,80 @@ OUTPUT ONLY THE PROMPT TEXT IN ENGLISH. No greetings, no explanations, no commen
       rowBrights.push(avg);
     }
 
-    const topAvg = (rowBrights[0] + rowBrights[1]) / 2;
-    const bottomAvg = (rowBrights[6] + rowBrights[7]) / 2;
+    const topAvg = (rowBrights[0] + rowBrights[1] + rowBrights[2]) / 3;
+    const bottomAvg = (rowBrights[9] + rowBrights[10] + rowBrights[11]) / 3;
+    const midAvg = rowBrights.slice(4, 8).reduce((s, v) => s + v, 0) / 4;
 
     const horizon = detectHorizon(regions, w, h);
 
     if (horizon > 0) {
-      parts.push('landscape scene with distinct horizon line');
-      if (topAvg > bottomAvg + 30) parts.push('bright sky area, darker foreground, atmospheric perspective');
-      else if (bottomAvg > topAvg + 30) parts.push('bright foreground, darker sky, dramatic lighting');
-      else parts.push('balanced sky and ground exposure');
-    }
+      const horizonPos = horizon < 4 ? 'upper' : horizon < 8 ? 'middle' : 'lower';
+      parts.push(`landscape scene with a clearly defined horizon line in the ${horizonPos} third of the frame`);
+      if (topAvg > bottomAvg + 25) parts.push('bright expansive sky area with atmospheric perspective, darker ground below creating depth');
+      else if (bottomAvg > topAvg + 25) parts.push('dramatic lighting with brighter foreground elements contrasting against a darker sky');
+      else parts.push('evenly balanced sky and ground exposure with consistent lighting throughout the scene');
+    } else {
+      const isIndoor = detectIndoor(regions, w, h);
+      if (isIndoor) parts.push('indoor or enclosed space with structured spatial boundaries');
+      else parts.push('open environment without a distinct horizon, possibly abstract or close-up composition');
 
-    const centerCols = regions.filter(r => r.col >= 2 && r.col <= 5);
-    const edgeCols = regions.filter(r => r.col < 2 || r.col > 5);
-    const centerAvg = centerCols.reduce((s, r) => s + (r.r + r.g + r.b) / 3, 0) / centerCols.length;
-    const edgeAvg = edgeCols.reduce((s, r) => s + (r.r + r.g + r.b) / 3, 0) / edgeCols.length;
-
-    if (Math.abs(centerAvg - edgeAvg) > 25) {
-      if (centerAvg > edgeAvg) parts.push('prominent central subject with softer edges');
-      else parts.push('framed composition with darker center and brighter edges');
+      const verticalVar = rowBrights.reduce((s, v, i) => {
+        if (i === 0) return s;
+        return s + Math.abs(v - rowBrights[i - 1]);
+      }, 0) / rows;
+      if (verticalVar < 10) parts.push('very uniform scene with minimal tonal variation across the frame');
     }
 
     if (ctx) {
       const d = ctx.getImageData(0, 0, w, h).data;
-      let edgePixels = 0;
+      let edgePixels = 0, strongEdges = 0;
       for (let y = 1; y < h - 1; y++) {
         for (let x = 1; x < w - 1; x++) {
           const idx = (y * w + x) * 4;
           const gx = Math.abs(d[idx] - d[idx + 4]) + Math.abs(d[idx + 4 * w] - d[idx]);
-          if (gx > 80) edgePixels++;
+          if (gx > 60) edgePixels++;
+          if (gx > 120) strongEdges++;
         }
       }
       const edgeRatio = edgePixels / ((w - 2) * (h - 2));
-      if (edgeRatio > 0.15) parts.push('highly detailed texture, sharp edges, rich surface detail');
-      else if (edgeRatio > 0.08) parts.push('moderate detail with smooth transitions');
-      else parts.push('soft focus, smooth gradients, minimal texture');
+      const strongRatio = strongEdges / ((w - 2) * (h - 2));
+
+      if (strongRatio > 0.12) parts.push('very sharp high-frequency detail with crisp edges, intricate textures, and fine surface patterns throughout');
+      else if (edgeRatio > 0.18) parts.push('highly detailed textured surface with well-defined edges, rich in fine structural detail and material complexity');
+      else if (edgeRatio > 0.10) parts.push('moderate detail level with smooth transitions between elements, gentle gradients and soft edge definition');
+      else if (edgeRatio > 0.05) parts.push('soft focus with subtle detail, gentle transitions between tonal areas, smooth gradients');
+      else parts.push('very smooth image with minimal texture, possibly out-of-focus background or uniform surface like sky or water');
     }
 
     const isPortrait = img.height > img.width;
     const isLandscape = img.width > img.height;
+    const isSquare = Math.abs(img.width - img.height) < img.width * 0.05;
 
-    if (isPortrait) {
-      if (horizon < 0) parts.push('portrait-oriented composition, likely a person or vertical subject');
-      else parts.push('vertical landscape composition');
+    if (isSquare) {
+      parts.push('square format composition, balanced and symmetrical, suitable for social media or profile imagery');
+    } else if (isPortrait) {
+      const ratio = img.height / img.width;
+      if (ratio > 1.5) parts.push('vertical portrait-oriented composition with tall narrow framing, emphasizing height and vertical elements');
+      else parts.push('portrait-oriented composition, ideal for human subjects or vertical subject matter');
     } else if (isLandscape) {
-      if (horizon > 0) parts.push('wide landscape orientation');
-      else parts.push('horizontal composition, suitable for panoramic view');
+      const ratio = img.width / img.height;
+      if (ratio > 1.6) parts.push('wide cinematic landscape orientation with expansive panoramic feel, ideal for environmental scenes');
+      else parts.push('horizontal composition with natural wide-angle perspective');
     }
 
-    return parts.join(', ');
+    return parts.join('. ');
+  }
+
+  function detectIndoor(regions, w, h) {
+    const satValues = regions.map(r => r.s);
+    const avgSat = satValues.reduce((s, v) => s + v, 0) / satValues.length;
+    const edges = regions.filter(r => {
+      const neighbors = regions.filter(n => Math.abs(n.row - r.row) + Math.abs(n.col - r.col) === 1);
+      if (!neighbors.length) return false;
+      const avgDiff = neighbors.reduce((s, n) => s + Math.abs((n.r + n.g + n.b) / 3 - (r.r + r.g + r.b) / 3), 0) / neighbors.length;
+      return avgDiff > 30;
+    });
+    return edges.length > 20 && avgSat < 0.3;
   }
 
   async function loadTfjs(onProgress) {
@@ -889,48 +1002,81 @@ OUTPUT ONLY THE PROMPT TEXT IN ENGLISH. No greetings, no explanations, no commen
   }
 
   function colorName(r, g, b) {
-    if (r > 200 && g > 200 && b > 200) return 'white';
-    if (r < 60 && g < 60 && b < 60) return 'black';
-    if (r > 200 && g < 100 && b < 100) return 'red';
-    if (r > 150 && g < 100 && b < 50) return 'brown';
-    if (r > 150 && g > 100 && b < 80) return 'orange';
-    if (r > 200 && g > 180 && b < 100) return 'yellow';
-    if (r < 100 && g > 150 && b < 100) return 'green';
-    if (r < 100 && g > 150 && b > 150) return 'teal';
-    if (r < 100 && g < 100 && b > 180) return 'blue';
-    if (r > 150 && g < 100 && b > 150) return 'purple';
-    if (r > 180 && g > 150 && b > 180) return 'pink';
-    if (r > 150 && g > 150 && b > 150) return 'light gray';
-    if (r < 100 && g < 100 && b < 100) return 'dark gray';
-    if (r > g + 30 && r > b + 30) return 'warm-toned';
-    if (b > r + 30 && b > g + 30) return 'cool-toned';
-    return 'neutral-toned';
+    const max = Math.max(r, g, b), min = Math.min(r, g, b);
+    const l = (max + min) / 2, s = (max - min) / (max || 1);
+
+    if (max < 25) return 'deep black';
+    if (max < 55) return 'very dark charcoal';
+    if (max < 90) return 'dark gray';
+
+    if (max > 240 && min > 230) return 'pure white';
+    if (max > 220 && min > 190 && s < 0.08) return 'off-white / cream';
+    if (l > 200 && s < 0.15) return 'light gray';
+    if (l > 150 && s < 0.12) return 'medium gray';
+    if (l > 100 && s < 0.12) return 'dark gray';
+
+    const rn = r / 255, gn = g / 255, bn = b / 255;
+    const hue = Math.atan2(Math.sqrt(3) * (gn - bn), 2 * rn - gn - bn) * 180 / Math.PI;
+    const hueNorm = hue < 0 ? hue + 360 : hue;
+
+    if (r > 220 && g > 180 && b < 100) return 'warm golden yellow';
+    if (r > 220 && g > 200 && b < 140) return 'pale yellow';
+    if (r > 200 && g < 80 && b < 80) return 'vibrant crimson red';
+    if (r > 180 && g < 60 && b < 60) return 'deep ruby red';
+    if (r > 160 && g < 80 && b < 50) return 'brick red / terracotta';
+    if (r > 200 && g > 100 && b < 60) return 'burnt orange / amber';
+    if (r > 180 && g > 130 && b < 70) return 'warm orange';
+    if (r > 200 && g > 160 && b > 100) return 'warm beige / sand';
+
+    if (hueNorm > 340 || hueNorm < 20) return r > 180 ? 'warm red' : 'deep maroon';
+    if (hueNorm < 40) return r > 200 ? 'vibrant orange-red' : 'rust / auburn';
+    if (hueNorm < 60) return g > 180 ? 'bright yellow' : 'mustard yellow / ochre';
+    if (hueNorm < 90) return g > 180 ? 'lime green' : 'olive green';
+    if (hueNorm < 150) {
+      if (g > 180) return l > 150 ? 'vibrant emerald green' : 'forest green';
+      if (g > 120) return 'mint green / sage';
+      return 'deep pine green';
+    }
+    if (hueNorm < 190) return g > 150 ? 'teal / seafoam' : 'deep teal';
+    if (hueNorm < 240) return b > 180 ? 'vibrant cerulean blue' : 'navy blue';
+    if (hueNorm < 280) return b > 150 ? 'royal blue' : 'deep indigo';
+    if (hueNorm < 320) return r > 150 ? 'vibrant purple / magenta' : 'deep violet';
+    return r > 180 ? 'warm pink / rose' : 'muted mauve';
   }
 
   function describeFabric(edgeRatio, brightness) {
-    if (edgeRatio > 0.2) return 'rough textured fabric';
-    if (edgeRatio > 0.12) return 'woven textured fabric, possibly denim, wool, or knitwear';
-    if (edgeRatio > 0.07) return 'smooth fabric like cotton or linen';
-    if (edgeRatio > 0.04) return 'fine smooth fabric, possibly silk, satin, or synthetic blend';
-    return 'very smooth, glossy fabric, possibly silk or latex';
+    if (edgeRatio > 0.25) return 'heavy textured fabric, possible wool, thick knit, or coarse tweed with prominent weave pattern';
+    if (edgeRatio > 0.18) return 'medium-weight textured fabric like denim, corduroy, or boucle with visible surface interest';
+    if (edgeRatio > 0.12) return 'woven fabric with subtle texture, such as cotton twill, linen blend, or fine knitwear';
+    if (edgeRatio > 0.07) return 'smooth fabric with minimal texture, like fine cotton poplin, silk charmeuse, or lightweight linen';
+    if (edgeRatio > 0.04) return 'very smooth and refined fabric, possibly satin, high-thread-count cotton, or polished synthetic';
+    return 'ultra-smooth glossy fabric, likely silk satin, latex, patent leather, or liquid-finish material with high sheen';
   }
 
   function describeHair(edgeRatio, r, g, b) {
     const lightness = (r + g + b) / 3;
     let color;
-    if (lightness > 200) color = 'blonde or platinum';
-    else if (lightness > 150) color = 'light brown or dirty blonde';
-    else if (lightness > 100) color = 'medium brown';
-    else if (lightness > 60) color = 'dark brown';
-    else color = 'black';
+    if (lightness > 220) color = 'platinum blonde or white-blonde';
+    else if (lightness > 190) color = 'light golden or honey blonde';
+    else if (lightness > 160) color = 'dirty blonde or light brown with warm undertones';
+    else if (lightness > 130) color = 'medium chestnut or caramel brown';
+    else if (lightness > 100) color = 'rich medium brown';
+    else if (lightness > 70) color = 'dark espresso brown';
+    else if (lightness > 45) color = 'very dark brown, nearly black';
+    else color = 'jet black';
 
     let texture;
-    if (edgeRatio > 0.2) texture = 'curly or very textured';
-    else if (edgeRatio > 0.13) texture = 'wavy with volume';
-    else if (edgeRatio > 0.08) texture = 'slightly wavy';
-    else texture = 'straight and sleek';
+    if (edgeRatio > 0.22) texture = 'highly textured and voluminous, likely curly or coily with significant body';
+    else if (edgeRatio > 0.17) texture = 'wavy with natural volume and visible texture, possible loose curls';
+    else if (edgeRatio > 0.12) texture = 'slightly wavy or tousled with gentle movement and soft bends';
+    else if (edgeRatio > 0.07) texture = 'straight with subtle body and smooth flow';
+    else texture = 'pin-straight and sleek with mirror-like smoothness';
 
-    return `${texture} ${color} hair`;
+    let length = '';
+    if (lightness > 150 && edgeRatio < 0.12) length = ', shoulder-length or longer';
+    else if (lightness < 80) length = ', appears short to medium length';
+
+    return `${texture} ${color}${length} hair`;
   }
 
   async function detectWithCocoSsd(base64Image, onProgress) {
@@ -965,27 +1111,28 @@ OUTPUT ONLY THE PROMPT TEXT IN ENGLISH. No greetings, no explanations, no commen
     const regions = analyzeGridRegions(ctx, w, h);
 
     if (detections.length === 0) {
-      parts.push('a professional photograph');
+      parts.push('a professional photograph featuring an artistic composition');
+      parts.push(describeScene(regions, w, h, img, ctx));
     } else {
       const main = detections[0];
       if (detections.length === 1) {
-        parts.push(`a ${main.class}`);
+        parts.push(`a ${main.class} as the primary subject`);
       } else if (detections.length === 2) {
-        parts.push(`a ${main.class} with ${detections[1].class}`);
+        parts.push(`a ${main.class} accompanied by a ${detections[1].class}`);
       } else {
-        const others = detections.slice(1).map(d => d.class).join(', ');
-        parts.push(`a ${main.class} with ${others}`);
+        const others = detections.slice(1).map(d => `a ${d.class}`).join(', ');
+        parts.push(`a ${main.class} together with ${others}, creating a layered composition`);
       }
 
       if (detections.length > 1) {
         const positions = detections.map(d => {
           const cx = d.bbox[0] + d.bbox[2] / 2;
           const cy = d.bbox[1] + d.bbox[3] / 2;
-          const xPos = cx < w / 3 ? 'left' : cx > 2 * w / 3 ? 'right' : 'center';
-          const yPos = cy < h / 3 ? 'upper' : cy > 2 * h / 3 ? 'lower' : 'middle';
-          return `${d.class} at ${yPos}-${xPos}`;
+          const xPos = cx < w / 3 ? 'on the left' : cx > 2 * w / 3 ? 'on the right' : 'in the center';
+          const yPos = cy < h / 3 ? 'upper portion' : cy > 2 * h / 3 ? 'lower portion' : 'middle';
+          return `${d.class} positioned ${yPos}, ${xPos}`;
         });
-        parts.push('composition with ' + positions.join(', '));
+        parts.push(`spatial arrangement: ${positions.join('; ')}`);
       }
 
       const mainBox = main.bbox;
@@ -994,22 +1141,30 @@ OUTPUT ONLY THE PROMPT TEXT IN ENGLISH. No greetings, no explanations, no commen
       const mw = Math.min(w - mx, Math.ceil(mainBox[2]));
       const mh = Math.min(h - my, Math.ceil(mainBox[3]));
 
-      if (mw > 20 && mh > 20) {
+      if (mw > 25 && mh > 25) {
         const objInfo = regionColorInfo(ctx, mx, my, mw, mh);
         const mainColor = colorName(objInfo.avgR, objInfo.avgG, objInfo.avgB);
-        parts.push(`predominantly ${mainColor} in color`);
-        if (objInfo.edgeRatio > 0.1) parts.push('with detailed visible texture');
-      }
-    }
+        parts.push(`primarily ${mainColor} in coloration`);
 
-    parts.push(describeScene(regions, w, h, img, ctx));
+        const objSize = (mw * mh) / (w * h);
+        if (objSize > 0.5) parts.push('dominant large subject that fills most of the frame');
+        else if (objSize > 0.25) parts.push('substantial subject occupying significant portion of the composition');
+        else parts.push('subject presented at moderate scale within the environment');
+
+        if (objInfo.edgeRatio > 0.15) parts.push('with highly textured surface showing fine detail and material complexity');
+        else if (objInfo.edgeRatio > 0.08) parts.push('with visible surface detail and moderate texture');
+        else parts.push('with smooth surface finish and minimal visible texture');
+      }
+
+      parts.push(describeScene(regions, w, h, img, ctx));
+    }
 
     const imageData = ctx.getImageData(0, 0, w, h);
     parts.push(describeLighting(imageData, w, h));
     parts.push(describeColors(ctx, w, h));
     parts.push(describeComposition(regions, w, h));
 
-    return parts.join(', ');
+    return parts.join('. ');
   }
 
   function buildPersonDescription(personBox, ctx, w, h, img) {
@@ -1024,17 +1179,45 @@ OUTPUT ONLY THE PROMPT TEXT IN ENGLISH. No greetings, no explanations, no commen
 
     const headTop = Math.max(0, Math.floor(py));
     const headBottom = Math.min(h, Math.ceil(py + ph * 0.2));
-    const headLeft = Math.max(0, Math.floor(cx - pw * 0.15));
-    const headRight = Math.min(w, Math.ceil(cx + pw * 0.15));
+    const headLeft = Math.max(0, Math.floor(cx - pw * 0.2));
+    const headRight = Math.min(w, Math.ceil(cx + pw * 0.2));
     const headW = headRight - headLeft;
     const headH = headBottom - headTop;
 
-    if (headW > 10 && headH > 10) {
+    let skinTone = '';
+    if (headW > 15 && headH > 15) {
       const hairInfo = regionColorInfo(ctx, headLeft, headTop, headW, headH);
       const hairDesc = describeHair(hairInfo.edgeRatio, hairInfo.avgR, hairInfo.avgG, hairInfo.avgB);
-      parts.push(`a person with ${hairDesc}`);
+
+      const headRegion = ctx.getImageData(headLeft, headTop, headW, headH).data;
+      let skinPixels = 0, totalFace = headW * headH;
+      let sumSkinR = 0, sumSkinG = 0, sumSkinB = 0;
+      for (let i = 0; i < headRegion.length; i += 4) {
+        const r = headRegion[i], g = headRegion[i + 1], b = headRegion[i + 2];
+        const max = Math.max(r, g, b), min = Math.min(r, g, b);
+        if (r > 60 && g > 40 && b > 30 && (max - min) > 12) {
+          skinPixels++;
+          sumSkinR += r; sumSkinG += g; sumSkinB += b;
+        }
+      }
+
+      const skinRatio = skinPixels / totalFace;
+      let faceDesc = '';
+      if (skinRatio > 0.45) {
+        faceDesc = 'face clearly visible, front-facing or three-quarter view';
+        if (skinPixels > 10) {
+          const avgSkinR = sumSkinR / skinPixels, avgSkinG = sumSkinG / skinPixels, avgSkinB = sumSkinB / skinPixels;
+          skinTone = skinToneName(avgSkinR, avgSkinG, avgSkinB);
+        }
+      } else if (skinRatio > 0.2) {
+        faceDesc = 'facial features partially visible, possibly side profile or partially obscured';
+      } else {
+        faceDesc = 'face mostly obscured or turned away from camera';
+      }
+
+      parts.push(`a person with ${hairDesc}, ${faceDesc}${skinTone ? `, ${skinTone} skin tone` : ''}`);
     } else {
-      parts.push('a person');
+      parts.push('a person, head area too small for detailed facial analysis');
     }
 
     const torsoTop = Math.min(h, Math.ceil(py + ph * 0.2));
@@ -1048,40 +1231,39 @@ OUTPUT ONLY THE PROMPT TEXT IN ENGLISH. No greetings, no explanations, no commen
       const clothInfo = regionColorInfo(ctx, torsoLeft, torsoTop, torsoW, torsoH);
       const clothColor = colorName(clothInfo.avgR, clothInfo.avgG, clothInfo.avgB);
       const fabricDesc = describeFabric(clothInfo.edgeRatio, clothInfo.brightness);
-      parts.push(`wearing ${clothColor} clothing, ${fabricDesc}`);
+      parts.push(`wearing ${clothColor} ${fabricDesc} clothing`);
 
-      if (ph > pw * 1.8) {
+      if (ph > pw * 1.6) {
         const legTop = Math.min(h, Math.ceil(py + ph * 0.55));
         const legBottom = Math.min(h, Math.ceil(py + ph * 0.9));
-        const legInfo = regionColorInfo(ctx, torsoLeft, legTop, torsoW, legBottom - legTop);
-        const legColor = colorName(legInfo.avgR, legInfo.avgG, legInfo.avgB);
-        if (legColor !== clothColor) parts.push(`with ${legColor} pants or skirt`);
+        const legH = legBottom - legTop;
+        if (legH > 20) {
+          const legInfo = regionColorInfo(ctx, torsoLeft, legTop, torsoW, legH);
+          const legColor = colorName(legInfo.avgR, legInfo.avgG, legInfo.avgB);
+          const legEdge = legInfo.edgeRatio;
+          if (!legColor.includes(clothColor.split(' ')[0])) {
+            if (legEdge > 0.12) parts.push(`with ${legColor} pants or trousers, possibly denim or twill`);
+            else parts.push(`wearing ${legColor} lower garments, possibly skirt, dress, or dress pants`);
+          }
+        }
+      } else if (ph > pw * 1.2) {
+        parts.push('wearing a dress or long top that extends below the waist');
       }
     }
 
-    const headRegion = ctx.getImageData(headLeft, headTop, headW, headH).data;
-    let skinPixels = 0, totalFace = headW * headH;
-    for (let i = 0; i < headRegion.length; i += 4) {
-      const r = headRegion[i], g = headRegion[i + 1], b = headRegion[i + 2];
-      const max = Math.max(r, g, b), min = Math.min(r, g, b);
-      if (r > 60 && g > 40 && b > 30 && (max - min) > 15) skinPixels++;
-    }
-    const skinRatio = skinPixels / totalFace;
-    if (skinRatio > 0.3) {
-      if (skinRatio > 0.5) parts.push('face clearly visible, front-facing');
-      else parts.push('facial features partially visible');
-    }
-
     const bodyRatio = pw / ph;
-    if (bodyRatio > 0.45) parts.push('full body shot');
-    else if (bodyRatio > 0.3) parts.push('three-quarter body framing');
-    else parts.push('portrait or half-body framing');
+    if (bodyRatio > 0.50) parts.push('full body visible in frame');
+    else if (bodyRatio > 0.35) parts.push('three-quarter body framing');
+    else if (bodyRatio > 0.22) parts.push('half-body or mid-shot framing');
+    else if (bodyRatio > 0.12) parts.push('close-up portrait framing, head and shoulders visible');
+    else parts.push('extreme close-up, mainly face and upper torso');
 
-    const isCenter = Math.abs(cx - w / 2) < w * 0.15;
-    if (isCenter) parts.push('centered composition, subject facing forward');
+    const isCenter = Math.abs(cx - w / 2) < w * 0.12;
+    if (isCenter) parts.push('subject centered in the frame with balanced composition, facing forward or slightly angled');
     else {
       const side = cx < w / 2 ? 'left' : 'right';
-      parts.push(`subject positioned at ${side} side`);
+      const vertical = cy < h / 3 ? 'upper' : cy > 2 * h / 3 ? 'lower' : 'middle';
+      parts.push(`subject positioned at ${vertical}-${side} of the frame, creating dynamic negative space`);
     }
 
     const imageData = ctx.getImageData(0, 0, w, h);
@@ -1090,7 +1272,18 @@ OUTPUT ONLY THE PROMPT TEXT IN ENGLISH. No greetings, no explanations, no commen
     parts.push(describeComposition(regions, w, h));
     parts.push(describeScene(regions, w, h, img, ctx));
 
-    return parts.join(', ');
+    return parts.join('. ');
+  }
+
+  function skinToneName(r, g, b) {
+    const l = (r + g + b) / 3;
+    if (l > 200) return 'fair / porcelain';
+    if (l > 170) return 'light / ivory';
+    if (l > 140) return 'light-to-medium / beige';
+    if (l > 110) return 'medium / olive or tan';
+    if (l > 85) return 'medium-to-deep / bronze';
+    if (l > 60) return 'deep / brown';
+    return 'very deep / dark brown or ebony';
   }
 
   async function analyzeImageClientSide(base64Image, onProgress) {
@@ -1106,11 +1299,11 @@ OUTPUT ONLY THE PROMPT TEXT IN ENGLISH. No greetings, no explanations, no commen
     });
 
     const canvas = document.createElement('canvas');
-    canvas.width = img.width;
-    canvas.height = img.height;
+    canvas.width = Math.min(img.width, 1200);
+    canvas.height = img.height * (canvas.width / img.width);
     const ctx = canvas.getContext('2d');
-    ctx.drawImage(img, 0, 0);
-    const w = img.width, h = img.height;
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    const w = canvas.width, h = canvas.height;
 
     let description;
     const personDetected = detections.find(d => d.class === 'person');
@@ -1118,46 +1311,52 @@ OUTPUT ONLY THE PROMPT TEXT IN ENGLISH. No greetings, no explanations, no commen
     if (personDetected) {
       if (onProgress) onProgress('Kişi detayları analiz ediliyor...');
       description = buildPersonDescription(personDetected.bbox, ctx, w, h, img);
-
-      const aspectRatio = (w / h).toFixed(2);
-      description += `, aspect ratio ${aspectRatio}`;
     } else {
-      if (onProgress) onProgress('Nesne detayları analiz ediliyor...');
+      if (onProgress) onProgress('Nesne ve sahne detayları analiz ediliyor...');
       description = buildObjectDescription(detections, ctx, w, h, img);
-
-      const aspectRatio = (w / h).toFixed(2);
-      description += `, aspect ratio ${aspectRatio}`;
     }
 
-    const megaPixels = ((w * h) / 1000000).toFixed(1);
-    if (megaPixels > 5) description += ', high resolution';
+    const aspectRatio = (w / h).toFixed(2);
+    const megaPixels = ((img.width * img.height) / 1000000).toFixed(1);
 
-    description += ', 4K, ultra high definition, highly detailed, sharp focus, photorealistic, professional photography, premium quality';
+    let prompt = `A highly detailed professional photograph. ${description}.`;
+    prompt += ` Aspect ratio ${aspectRatio}, ${megaPixels} megapixel resolution.`;
+    prompt += ` 4K, ultra high definition, highly detailed texture rendering, tack-sharp focus, photorealistic quality, professional photography, premium studio quality.`;
 
-    if (w > 2000 || h > 2000) description += ', ultra high resolution image with exceptional clarity';
+    if (img.width > 2000 || img.height > 2000) prompt += ' Ultra high resolution image with exceptional clarity and fine detail reproduction.';
 
-    return description;
+    return prompt;
   }
 
   // ====== HUGGING FACE ANALYSIS ======
   const HF_TOKEN = '__HF_TOKEN__';
 
+  async function blobFromDataUrl(dataUrl) {
+    const resp = await fetch(dataUrl);
+    return await resp.blob();
+  }
+
   async function analyzeImageWithHF(base64Image) {
     const token = HF_TOKEN.startsWith('hf_') ? HF_TOKEN : null;
-    if (!token) throw new Error('HF token yok');
 
-    const blobResp = await fetch(base64Image);
-    const blob = await blobResp.blob();
+    const blob = await blobFromDataUrl(base64Image);
+
+    const headers = { 'Content-Type': 'application/octet-stream' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
 
     const resp = await fetch('https://api-inference.huggingface.co/models/Salesforce/blip-image-captioning-base', {
       method: 'POST',
-      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/octet-stream' },
+      headers,
       body: blob
     });
 
     if (!resp.ok) {
       const err = await resp.text();
       if (resp.status === 503) throw new Error('HF model yükleniyor, birazdan tekrar deneyin');
+      if (resp.status === 401 || resp.status === 403) {
+        if (!token) throw new Error('HF kimlik doğrulama gerekli - HF_TOKEN ekleyin');
+        throw new Error('HF token geçersiz');
+      }
       throw new Error('HF hatası: ' + err.substring(0, 100));
     }
 
@@ -1168,7 +1367,6 @@ OUTPUT ONLY THE PROMPT TEXT IN ENGLISH. No greetings, no explanations, no commen
 
     if (!caption) throw new Error('HF açıklama üretemedi');
 
-    // Caption'u detaylı bir prompt'a çevir
     const enhanced = `A highly detailed photograph. ${caption}. Professional photography, 4K, ultra high resolution, sharp focus, photorealistic, high quality, detailed textures, natural lighting, cinematic composition.`;
     return enhanced;
   }
