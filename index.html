@@ -754,27 +754,6 @@ OUTPUT ONLY THE PROMPT TEXT IN ENGLISH. No greetings, no explanations, no commen
 
     return parts.join('. ');
   }
-        regions.push({ r: sumR / count, g: sumG / count, b: sumB / count, row: r, col: c });
-      }
-    }
-    return regions;
-  }
-
-  function describeComposition(regions, w, h) {
-    const centerRowStart = 2, centerRowEnd = 5, centerColStart = 2, centerColEnd = 5;
-    const centerRegions = regions.filter(r => r.row >= centerRowStart && r.row <= centerRowEnd && r.col >= centerColStart && r.col <= centerColEnd);
-    const edgeRegions = regions.filter(r => r.row < centerRowStart || r.row > centerRowEnd || r.col < centerColStart || r.col > centerColEnd);
-
-    const centerBright = centerRegions.reduce((s, r) => s + (r.r + r.g + r.b) / 3, 0) / centerRegions.length;
-    const edgeBright = edgeRegions.reduce((s, r) => s + (r.r + r.g + r.b) / 3, 0) / edgeRegions.length;
-
-    const parts = [];
-    if (centerBright > edgeBright + 20) parts.push('center-focused composition with bright main subject, vignette effect');
-    else if (edgeBright > centerBright + 20) parts.push('bright background framing a darker central subject');
-    else parts.push('balanced composition with even lighting across frame');
-
-    return parts.join(', ');
-  }
 
   function describeLighting(imageData, w, h) {
     const data = imageData.data;
