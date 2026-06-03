@@ -1241,26 +1241,37 @@ OUTPUT ONLY THE PROMPT TEXT IN ENGLISH. No greetings, no explanations, no commen
   });
 
   function addFiles(files) {
-    const valid = [];
-    for (const f of files) {
-      if (f.type.startsWith('image/') && (f.type === 'image/png' || f.type === 'image/jpeg' || f.type === 'image/webp')) {
-        valid.push(f);
-      }
-    }
-    if (!valid.length) { alert('Lütfen geçerli bir görsel dosyası seçin (PNG, JPG, WEBP).'); return; }
-    let loaded = 0;
-    for (const f of valid) {
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        images.push({ file: f, src: e.target.result, mime: f.type });
-        if (loaded === 0) {
-          const imgs = await createActivityImages(e.target.result, e.target.result);
-          logActivity(getCurrentUser(), 'Görsel yükledi', `${valid.length} adet görsel yüklendi`, imgs);
+    try {
+      const valid = [];
+      for (const f of files) {
+        if (f.type.startsWith('image/') && (f.type === 'image/png' || f.type === 'image/jpeg' || f.type === 'image/webp')) {
+          valid.push(f);
         }
-        loaded++;
-        renderThumbs();
-      };
-      reader.readAsDataURL(f);
+      }
+      if (!valid.length) { alert('Lütfen geçerli bir görsel dosyası seçin (PNG, JPG, WEBP).'); return; }
+      let loaded = 0;
+      for (const f of valid) {
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+          try {
+            images.push({ file: f, src: e.target.result, mime: f.type });
+            if (loaded === 0) {
+              const imgs = await createActivityImages(e.target.result, e.target.result);
+              logActivity(getCurrentUser(), 'Görsel yükledi', `${valid.length} adet görsel yüklendi`, imgs);
+            }
+            loaded++;
+            renderThumbs();
+          } catch (err) {
+            console.error('Dosya okuma hatası:', err);
+            alert('Görsel yüklenirken hata: ' + err.message);
+          }
+        };
+        reader.onerror = () => { alert('Dosya okunamadı: ' + f.name); };
+        reader.readAsDataURL(f);
+      }
+    } catch (err) {
+      console.error('addFiles hatası:', err);
+      alert('Görsel yükleme hatası: ' + err.message);
     }
   }
 
