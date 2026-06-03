@@ -501,6 +501,7 @@
   function setSession(email) { sessionStorage.setItem(SESSION_KEY, email); }
   function clearSession() { sessionStorage.removeItem(SESSION_KEY); }
   function getCurrentUser() { return getSession(); }
+  function isLoggedIn() { return !!getSession(); }
 
   function getApiKey() { return GEMINI_API_KEY; }
 
@@ -2077,44 +2078,50 @@ renderUsers();renderNotifs();renderActivities();
 
   // Gate login
   gateLoginBtn.addEventListener('click', () => {
-    const email = gateEmail.value.trim();
-    const pass = gatePassword.value.trim();
-    gateError.style.display = 'none';
+    try {
+      const email = gateEmail.value.trim();
+      const pass = gatePassword.value.trim();
+      gateError.style.display = 'none';
 
-    if (!email || !pass) { gateError.textContent = 'Lütfen tüm alanları doldurun.'; gateError.style.display = 'block'; return; }
+      if (!email || !pass) { gateError.textContent = 'Lütfen tüm alanları doldurun.'; gateError.style.display = 'block'; return; }
 
-    // Admin login
-    if (email === 'admin' && pass === 'Ag1453ag!') {
-      try {
-        setSession('admin');
+      // Admin login
+      if (email === 'admin' && pass === 'Ag1453ag!') {
+        try {
+          setSession('admin');
+          hideGate();
+          renderTopBar();
+          openAdminPanel();
+        } catch (e) {
+          console.error('Admin giriş hatası:', e);
+          gateError.textContent = 'Giriş yapılırken hata oluştu: ' + e.message;
+          gateError.style.display = 'block';
+        }
+        return;
+      }
+
+      if (gateMode === 'register') {
+        if (!email.includes('@')) { gateError.textContent = 'Geçerli bir e-posta adresi girin.'; gateError.style.display = 'block'; return; }
+        const users = getUsers();
+        if (users[email]) { gateError.textContent = 'Bu e-posta zaten kayıtlı.'; gateError.style.display = 'block'; return; }
+        users[email] = { password: pass, created: Date.now() };
+        saveUsers(users);
+        setSession(email);
+        logActivity(email, 'Kayıt oldu', 'Yeni kullanıcı kaydı');
         hideGate();
         renderTopBar();
-        openAdminPanel();
-      } catch (e) {
-        console.error('Admin giriş hatası:', e);
-        gateError.textContent = 'Giriş yapılırken hata oluştu: ' + e.message;
-        gateError.style.display = 'block';
+      } else {
+        const users = getUsers();
+        if (!users[email] || users[email].password !== pass) { gateError.textContent = 'E-posta veya şifre hatalı.'; gateError.style.display = 'block'; return; }
+        setSession(email);
+        logActivity(email, 'Giriş yaptı', 'Kullanıcı girişi');
+        hideGate();
+        renderTopBar();
       }
-      return;
-    }
-
-    if (gateMode === 'register') {
-      if (!email.includes('@')) { gateError.textContent = 'Geçerli bir e-posta adresi girin.'; gateError.style.display = 'block'; return; }
-      const users = getUsers();
-      if (users[email]) { gateError.textContent = 'Bu e-posta zaten kayıtlı.'; gateError.style.display = 'block'; return; }
-      users[email] = { password: pass, created: Date.now() };
-      saveUsers(users);
-      setSession(email);
-      logActivity(email, 'Kayıt oldu', 'Yeni kullanıcı kaydı');
-      hideGate();
-      renderTopBar();
-    } else {
-      const users = getUsers();
-      if (!users[email] || users[email].password !== pass) { gateError.textContent = 'E-posta veya şifre hatalı.'; gateError.style.display = 'block'; return; }
-      setSession(email);
-      logActivity(email, 'Giriş yaptı', 'Kullanıcı girişi');
-      hideGate();
-      renderTopBar();
+    } catch (e) {
+      console.error('Giriş hatası:', e);
+      gateError.textContent = 'Beklenmeyen hata: ' + (e.message || e);
+      gateError.style.display = 'block';
     }
   });
 
