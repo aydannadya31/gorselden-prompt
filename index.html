@@ -451,10 +451,10 @@
         const result = await res.json();
         this.sha = result.sha;
         const remote = JSON.parse(b64Decode(result.content));
-        if (remote.users) localStorage.setItem('gp_users', JSON.stringify(remote.users));
-        if (remote.history) localStorage.setItem('gp_history', JSON.stringify(remote.history));
-        if (remote.activity) localStorage.setItem('gp_activity', JSON.stringify(remote.activity));
-        if (remote.notifications) localStorage.setItem('gp_notifications', JSON.stringify(remote.notifications));
+        if (remote.users) safeSetItem('gp_users', remote.users);
+        if (remote.history) safeSetItem('gp_history', remote.history);
+        if (remote.activity) safeSetItem('gp_activity', remote.activity);
+        if (remote.notifications) safeSetItem('gp_notifications', remote.notifications);
       } catch (e) { console.warn('GitHub pull hatası:', e); }
     },
 
@@ -496,7 +496,7 @@
   const SESSION_KEY = 'gp_session';
 
   function getUsers() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch { return {}; } }
-  function saveUsers(u) { localStorage.setItem(STORAGE_KEY, JSON.stringify(u)); GHSync.push(); }
+  function saveUsers(u) { safeSetItem(STORAGE_KEY, u); GHSync.push(); }
   function getSession() { return sessionStorage.getItem(SESSION_KEY); }
   function setSession(email) { sessionStorage.setItem(SESSION_KEY, email); }
   function clearSession() { sessionStorage.removeItem(SESSION_KEY); }
@@ -513,7 +513,8 @@
     const all = JSON.parse(localStorage.getItem('gp_history')) || {};
     if (!all[email]) all[email] = [];
     all[email].unshift(entry);
-    localStorage.setItem('gp_history', JSON.stringify(all));
+    if (all[email].length > 100) all[email] = all[email].slice(0, 100);
+    safeSetItem('gp_history', all);
     GHSync.push();
   }
 
@@ -521,7 +522,7 @@
     const all = JSON.parse(localStorage.getItem('gp_history')) || {};
     if (!all[email]) return;
     all[email].splice(index, 1);
-    localStorage.setItem('gp_history', JSON.stringify(all));
+    safeSetItem('gp_history', all);
     GHSync.push();
   }
 
@@ -1213,7 +1214,7 @@ OUTPUT ONLY THE PROMPT TEXT IN ENGLISH. No greetings, no explanations, no commen
         c.height = img.height * s;
         const ctx = c.getContext('2d');
         ctx.drawImage(img, 0, 0, c.width, c.height);
-        resolve(c.toDataURL('image/jpeg', 0.6));
+        resolve(c.toDataURL('image/jpeg', 0.35));
       };
       img.onerror = () => resolve(null);
       img.src = src;
@@ -1221,8 +1222,7 @@ OUTPUT ONLY THE PROMPT TEXT IN ENGLISH. No greetings, no explanations, no commen
   }
 
   async function createActivityImages(src, originalSrc) {
-    const thumb = await createThumbnail(src, 200);
-    return { thumb, full: originalSrc || src };
+    return await createThumbnail(src, 120);
   }
 
   // ====== IMAGE UPLOAD ======
@@ -1601,7 +1601,7 @@ OUTPUT ONLY THE PROMPT TEXT IN ENGLISH. No greetings, no explanations, no commen
   function addNotification(msg) {
     const notifs = JSON.parse(localStorage.getItem('gp_notifications')) || [];
     notifs.unshift({ msg, date: Date.now(), read: false });
-    localStorage.setItem('gp_notifications', JSON.stringify(notifs));
+    safeSetItem('gp_notifications', notifs);
     GHSync.push();
   }
 
@@ -1612,15 +1612,34 @@ OUTPUT ONLY THE PROMPT TEXT IN ENGLISH. No greetings, no explanations, no commen
   function clearNotification(index) {
     const notifs = getNotifications();
     notifs.splice(index, 1);
-    localStorage.setItem('gp_notifications', JSON.stringify(notifs));
+    safeSetItem('gp_notifications', notifs);
     GHSync.push();
+  }
+
+  function safeSetItem(key, data) {
+    try {
+      localStorage.setItem(key, JSON.stringify(data));
+    } catch (e) {
+      if (e.name === 'QuotaExceededError' || e.code === 22) {
+        console.warn('localStorage kotası doldu, eski kayıtlar temizleniyor');
+        const trimmed = {};
+        for (const [k, v] of Object.entries(data)) {
+          if (Array.isArray(v)) trimmed[k] = v.slice(0, 25);
+          else trimmed[k] = v;
+        }
+        localStorage.setItem(key, JSON.stringify(trimmed));
+      } else {
+        throw e;
+      }
+    }
   }
 
   function logActivity(email, action, detail, imageData) {
     const all = JSON.parse(localStorage.getItem('gp_activity')) || {};
     if (!all[email]) all[email] = [];
     all[email].unshift({ action, detail, image: imageData || null, date: Date.now() });
-    localStorage.setItem('gp_activity', JSON.stringify(all));
+    if (all[email].length > 50) all[email] = all[email].slice(0, 50);
+    safeSetItem('gp_activity', all);
     GHSync.push();
   }
 
@@ -1803,8 +1822,7 @@ function renderActivities(){
     }
     let html='<div class="act-meta"><strong>'+escapeHtml(item.email)+'</strong> · '+new Date(item.date).toLocaleString('tr-TR')+' · '+escapeHtml(item.action)+'</div><div class="act-content">';
     if(item.image){
-      const thumbSrc=typeof item.image==='string'?item.image:item.image.thumb;
-      html+='<img class="act-img" src="'+thumbSrc+'" data-full="'+(typeof item.image==='string'?item.image:item.image.full)+'" alt="görsel">';
+      html+='<img class="act-img" src="'+item.image+'" alt="görsel">';
     }
     html+='<div class="act-text">';
     if(isPrompt) html+='<div class="prompt-label">📝 Oluşturulan Prompt</div>';
@@ -1813,7 +1831,7 @@ function renderActivities(){
     html+='</div></div>';
     div.innerHTML=html;
     const img=div.querySelector('.act-img');
-    if(img) img.addEventListener('click',function(){openLightbox(this.getAttribute('data-full'))});
+    if(img) img.addEventListener('click',function(){openLightbox(this.src)});
     list.appendChild(div);
   });
 }
