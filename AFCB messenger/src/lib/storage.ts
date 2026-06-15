@@ -1,61 +1,31 @@
-import { ref, uploadString, getDownloadURL, deleteObject } from 'firebase/storage';
-import { storage } from './firebase';
-
 type MediaType = 'image' | 'video' | 'audio';
 
-const MIME_EXT: Record<string, string> = {
-  image: 'jpg',
-  video: 'webm',
-  audio: 'webm',
-};
-
 /**
- * Upload base64 media to Firebase Storage and return download URL.
- * Falls back to returning the base64 string on error (legacy behavior).
+ * Upload media to storage. On Spark plan, Storage is not available,
+ * so we store base64 directly in Firestore (legacy-compatible).
  */
 export async function uploadMedia(
   base64Data: string,
-  chatId: string,
-  msgId: string,
-  type: MediaType
+  _chatId: string,
+  _msgId: string,
+  _type: MediaType
 ): Promise<string> {
-  try {
-    const ext = MIME_EXT[type] || 'bin';
-    const fileRef = ref(storage, `messages/${chatId}/${msgId}/${type}.${ext}`);
-    await uploadString(fileRef, base64Data, 'data_url');
-    return await getDownloadURL(fileRef);
-  } catch (err) {
-    console.warn('Storage upload failed, falling back to base64:', err);
-    return base64Data;
-  }
+  return base64Data;
 }
 
 /**
- * Upload profile photo to Firebase Storage and return download URL.
+ * Upload profile photo. Returns the base64 directly (no Firebase Storage).
  */
 export async function uploadProfilePhoto(
   base64Data: string,
-  userId: string
+  _userId: string
 ): Promise<string> {
-  try {
-    const fileRef = ref(storage, `profiles/${userId}/photo.jpg`);
-    await uploadString(fileRef, base64Data, 'data_url');
-    return await getDownloadURL(fileRef);
-  } catch (err) {
-    console.warn('Profile photo upload failed, falling back to base64:', err);
-    return base64Data;
-  }
+  return base64Data;
 }
 
 /**
- * Delete a media file from Storage.
+ * Delete media from storage. No-op on Spark plan (base64 only).
  */
-export async function deleteMedia(storageUrl: string): Promise<void> {
-  if (!storageUrl.startsWith('https://')) return; // skip base64
-  try {
-    const fileRef = ref(storage, storageUrl);
-    await deleteObject(fileRef);
-  } catch (err) {
-    console.warn('Storage delete failed:', err);
-  }
+export async function deleteMedia(_storageUrl: string): Promise<void> {
+  // base64 only — nothing to delete
 }
