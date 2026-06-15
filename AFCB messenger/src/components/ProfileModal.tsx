@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
+import { useToast } from '../lib/toast';
 import { UserProfile } from '../types';
 import { X, Check, User, Info, Wifi, Camera, Upload, Trash2, RefreshCw } from 'lucide-react';
 import { cn } from '../lib/utils';
@@ -11,10 +12,18 @@ interface ProfileModalProps {
 }
 
 const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose }) => {
+  const { addToast } = useToast();
   const [displayName, setDisplayName] = useState(user.displayName);
+  const [nickname, setNickname] = useState(user.nickname || '');
   const [about, setAbout] = useState(user.about || '');
   const [onlineStatus, setOnlineStatus] = useState(user.onlineStatus || 'online');
   const [photoURL, setPhotoURL] = useState(user.photoURL);
+  const [birthDate, setBirthDate] = useState(user.birthDate || '');
+  const [phone, setPhone] = useState(user.phone || '');
+  const [location, setLocation] = useState(user.location || '');
+  const [showBirthDate, setShowBirthDate] = useState(user.showBirthDate ?? true);
+  const [showPhone, setShowPhone] = useState(user.showPhone ?? true);
+  const [showLocation, setShowLocation] = useState(user.showLocation ?? true);
   const [saving, setSaving] = useState(false);
   
   const [isCameraActive, setIsCameraActive] = useState(false);
@@ -25,16 +34,31 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose }) => {
   const handleSave = async () => {
     setSaving(true);
     try {
+      let finalPhotoURL = photoURL;
+      if (photoURL && photoURL.startsWith('data:')) {
+        const { uploadProfilePhoto } = await import('../lib/storage');
+        finalPhotoURL = await uploadProfilePhoto(photoURL, user.uid);
+        setPhotoURL(finalPhotoURL);
+      }
       const userRef = doc(db, 'users', user.uid);
       await updateDoc(userRef, {
+        uid: user.uid,
         displayName,
+        nickname,
         about,
         onlineStatus,
-        photoURL
+        photoURL: finalPhotoURL,
+        birthDate,
+        phone,
+        location,
+        showBirthDate,
+        showPhone,
+        showLocation
       });
       onClose();
     } catch (error) {
       console.error("Profile update error:", error);
+      addToast("Profil kaydedilirken hata oluştu.", 'error');
     } finally {
       setSaving(false);
     }
@@ -49,7 +73,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose }) => {
       }
     } catch (err) {
       console.error("Camera access error:", err);
-      alert("Kameraya erişilemedi.");
+      addToast("Kameraya erişilemedi.", 'error');
     }
   };
 
@@ -84,7 +108,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose }) => {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 500 * 1024) { // 500KB limit for demo simplicity
-        alert("Dosya çok büyük (maks 500KB).");
+        addToast("Dosya çok büyük (maks 500KB).", 'error');
         return;
       }
       const reader = new FileReader();
@@ -199,6 +223,20 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose }) => {
             />
           </div>
 
+          {/* Nickname */}
+          <div className="space-y-2">
+            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+              <User size={12} className="text-purple-500" /> Takma Ad
+            </label>
+            <input 
+              type="text" 
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
+              className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-4 py-3 text-sm font-bold text-slate-900 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/10 outline-none transition-all placeholder:text-slate-300"
+              placeholder="Takma adınız (opsiyonel)..."
+            />
+          </div>
+
           {/* Online Status */}
           <div className="space-y-3">
              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
@@ -235,6 +273,51 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose }) => {
               className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-4 py-3 text-sm font-bold text-slate-900 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all resize-none placeholder:text-slate-300"
               placeholder="Neler yapıyorsun?"
             />
+          </div>
+
+          {/* Birth Date */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                🎂 Doğum Tarihi
+              </label>
+              <button onClick={() => setShowBirthDate(!showBirthDate)}
+                className={cn("text-[9px] font-bold px-2 py-1 rounded-lg transition-all", showBirthDate ? "bg-green-100 text-green-600" : "bg-slate-100 text-slate-400")}>
+                {showBirthDate ? 'Gösteriliyor' : 'Gizli'}
+              </button>
+            </div>
+            <input type="date" value={birthDate} onChange={e => setBirthDate(e.target.value)}
+              className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-4 py-3 text-sm font-bold text-slate-900 focus:border-blue-500 outline-none transition-all" />
+          </div>
+
+          {/* Phone */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                📞 Telefon No.
+              </label>
+              <button onClick={() => setShowPhone(!showPhone)}
+                className={cn("text-[9px] font-bold px-2 py-1 rounded-lg transition-all", showPhone ? "bg-green-100 text-green-600" : "bg-slate-100 text-slate-400")}>
+                {showPhone ? 'Gösteriliyor' : 'Gizli'}
+              </button>
+            </div>
+            <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+90 5XX XXX XXXX"
+              className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-4 py-3 text-sm font-bold text-slate-900 focus:border-blue-500 outline-none transition-all" />
+          </div>
+
+          {/* Location */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                📍 Konum
+              </label>
+              <button onClick={() => setShowLocation(!showLocation)}
+                className={cn("text-[9px] font-bold px-2 py-1 rounded-lg transition-all", showLocation ? "bg-green-100 text-green-600" : "bg-slate-100 text-slate-400")}>
+                {showLocation ? 'Gösteriliyor' : 'Gizli'}
+              </button>
+            </div>
+            <input type="text" value={location} onChange={e => setLocation(e.target.value)} placeholder="İstanbul, Türkiye"
+              className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-4 py-3 text-sm font-bold text-slate-900 focus:border-blue-500 outline-none transition-all" />
           </div>
 
           <div className="flex gap-3 pt-4">

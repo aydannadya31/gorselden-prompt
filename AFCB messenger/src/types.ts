@@ -8,6 +8,17 @@ export interface UserProfile {
   about?: string;
   uin?: string;
   onlineStatus?: 'online' | 'away' | 'busy';
+  nickname?: string;
+  bannedUntil?: any;
+  role?: 'user' | 'admin';
+  country?: string;
+  profileCompleted?: boolean;
+  birthDate?: string;
+  phone?: string;
+  location?: string;
+  showBirthDate?: boolean;
+  showPhone?: boolean;
+  showLocation?: boolean;
 }
 
 export interface Chat {
@@ -18,6 +29,9 @@ export interface Chat {
     name: string;
     photoURL?: string;
     createdBy: string;
+    adminId?: string;
+    password?: string;
+    bannedUsers?: { userId: string; until?: any }[];
   };
   lastMessage?: {
     text: string;
@@ -26,6 +40,14 @@ export interface Chat {
     timestamp: any;
   };
   updatedAt: any;
+  muted?: boolean;
+  unreadCount?: number;
+  heldBy?: string;
+  holdExpiresAt?: any;
+  holdDailyCount?: number;
+  holdDate?: string;
+  heldMembers?: Record<string, { heldBy: string; expiresAt?: any }>;
+  groupCountry?: string;
 }
 
 export interface Message {
@@ -33,14 +55,18 @@ export interface Message {
   text?: string;
   senderId: string;
   timestamp: any;
-  type: 'text' | 'image' | 'video' | 'audio';
+  type: 'text' | 'image' | 'video' | 'audio' | 'call';
   imageUrl?: string;
   videoUrl?: string;
   audioUrl?: string;
   status?: 'sending' | 'sent' | 'delivered' | 'read';
-  reactions?: Record<string, string>; // userId -> emoji
-  isDeleted?: boolean;
-  deletedAt?: any;
+  reactions?: Record<string, string>;
+  deletedBy?: string[];
+  toAdmin?: boolean;
+  callDuration?: number;
+  callStatus?: 'missed' | 'completed' | 'cancelled' | 'rejected' | 'answered';
+  encrypted?: boolean;
+  imagePassword?: string;
 }
 
 export interface Call {
@@ -50,6 +76,7 @@ export interface Call {
   chatId: string;
   callerId: string;
   type: 'private' | 'group';
+  mediaType: 'audio' | 'video';
   status: 'calling' | 'ongoing' | 'ended';
   createdAt: any;
 }
