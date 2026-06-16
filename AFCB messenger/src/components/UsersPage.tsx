@@ -36,26 +36,33 @@ export const UsersPage: React.FC<UsersPageProps> = ({ onSelectChat }) => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Track approved friend UIDs — closure refs so both onSnapshot callbacks
+  // can merge into a single setFriendsList call, avoiding any stale closures
+  // or React batching issues with separate functional updaters.
   useEffect(() => {
     if (!user) return;
+    let incomingUids: string[] = [];
+    let outgoingUids: string[] = [];
+
+    const merge = () => {
+      const all = [...new Set([...incomingUids, ...outgoingUids])];
+      setFriendsList(all);
+    };
+
+    const mapDoc = (d: { data(): Record<string, unknown>; id: string }) => ({ ...d.data(), id: d.id }) as { from: string; to: string; status: string; id: string };
+
     const unsub1 = onSnapshot(
       query(collection(db, 'friendRequests'), where('to', '==', user.uid)),
       (snap) => {
-        const docs = snap.docs.map(d => ({ ...d.data(), id: d.id } as { from: string; to: string; status: string; id: string }));
-        setFriendsList(prev => [...new Set([
-          ...prev,
-          ...docs.filter(d => d.status === 'approved').map(d => d.from)
-        ])]);
+        incomingUids = snap.docs.map(mapDoc).filter(d => d.status === 'approved').map(d => d.from);
+        merge();
       }
     );
     const unsub2 = onSnapshot(
       query(collection(db, 'friendRequests'), where('from', '==', user.uid)),
       (snap) => {
-        const docs = snap.docs.map(d => ({ ...d.data(), id: d.id } as { from: string; to: string; status: string; id: string }));
-        setFriendsList(prev => [...new Set([
-          ...prev,
-          ...docs.filter(d => d.status === 'approved').map(d => d.to)
-        ])]);
+        outgoingUids = snap.docs.map(mapDoc).filter(d => d.status === 'approved').map(d => d.to);
+        merge();
       }
     );
     return () => { unsub1(); unsub2(); };
