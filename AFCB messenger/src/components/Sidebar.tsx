@@ -115,12 +115,17 @@ export const Sidebar: React.FC<SidebarProps> = ({ onSelectChat, selectedChatId, 
 
     const q = query(
       collection(db, 'chats'),
-      where('participants', 'array-contains', user.uid),
-      orderBy('updatedAt', 'desc')
+      where('participants', 'array-contains', user.uid)
     );
 
     const unsubscribe = onSnapshot(q, async (snapshot) => {
-      const chatList = snapshot.docs.map(d => ({ ...d.data(), id: d.id } as Chat));
+      const chatList = snapshot.docs
+        .map(d => ({ ...d.data(), id: d.id } as Chat))
+        .sort((a, b) => {
+          const aTime = a.updatedAt?.toMillis?.() || 0;
+          const bTime = b.updatedAt?.toMillis?.() || 0;
+          return bTime - aTime;
+        });
       
       // Play sound if new message arrived and not from me
       const prevMsgs = prevLastMessagesRef.current;
