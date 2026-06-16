@@ -13,6 +13,7 @@ import BroadcastChannel from './components/BroadcastChannel';
 import { Login } from './components/Login';
 import { NewChatModal } from './components/NewChatModal';
 import { BroadcastModal } from './components/BroadcastModal';
+import { UsersPage } from './components/UsersPage';
 import { CallProvider } from './components/CallProvider';
 import { CallOverlay } from './components/CallOverlay';
 import { ProfileSetup } from './components/ProfileSetup';
@@ -145,16 +146,18 @@ function NexusApp() {
         />
       </div>
 
-      {/* Chat Area - hidden on mobile when showing sidebar */}
+      {/* Main Area - hidden on mobile when showing sidebar */}
       <div className={cn(
         "flex-1 flex flex-col min-w-0",
         !showMobileSidebar || !selectedChatId ? "flex" : "hidden sm:flex"
       )}>
-        {selectedChatId === '__broadcast__' ? (
+        {!selectedChatId ? (
+          <UsersPage onSelectChat={(id) => { setSelectedChatId(id); setShowMobileSidebar(false); }} />
+        ) : selectedChatId === '__broadcast__' ? (
           <BroadcastChannel onBack={() => setShowMobileSidebar(true)} />
         ) : (
           <ChatArea
-            chatId={selectedChatId || ''}
+            chatId={selectedChatId}
             onBack={() => setShowMobileSidebar(true)}
           />
         )}
