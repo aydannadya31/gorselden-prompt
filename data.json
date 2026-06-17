@@ -6,6 +6,15 @@
     }
   },
   "history": {},
-  "activity": {},
+  "activity": {
+    "aydannadya31@gmail.com": [
+      {
+        "action": "Kayıt oldu",
+        "detail": "Yeni kullanıcı kaydı",
+        "image": null,
+        "date": 1781701147249
+      }
+    ]
+  },
   "notifications": []
 }
