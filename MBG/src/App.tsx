@@ -608,8 +608,18 @@ const getTRDateKey = (timestamp?: Date | number): string => {
   }
 };
 
+const CACHED_ENTRIES_KEY = 'mbg_cached_entries';
+
+function loadCachedEntries(): ContentEntry[] {
+  try {
+    const raw = localStorage.getItem(CACHED_ENTRIES_KEY);
+    if (raw) return JSON.parse(raw) as ContentEntry[];
+  } catch (_) {}
+  return [];
+}
+
 export default function App() {
-  const [entries, setEntries] = useState<ContentEntry[]>([]);
+  const [entries, setEntries] = useState<ContentEntry[]>(() => loadCachedEntries());
   const [loading, setLoading] = useState(true);
   const [countdown, setCountdown] = useState(3600);
   const [view, setView] = useState<View>('home');
@@ -1186,7 +1196,6 @@ export default function App() {
         return { 
           id: doc.id, 
           ...data,
-          // Handle both Firestore Timestamps and numbers for backwards compatibility
           timestamp: data.timestamp?.toMillis ? data.timestamp.toMillis() : (data.timestamp || Date.now())
         } as ContentEntry;
       });
@@ -1197,6 +1206,7 @@ export default function App() {
         setEntries(prev => prev.length > 0 ? prev : getFallbackEntries());
       } else {
         setEntries(allItems);
+        try { localStorage.setItem(CACHED_ENTRIES_KEY, JSON.stringify(allItems)); } catch (_) {}
       }
       
       setLoading(false);
@@ -1209,6 +1219,8 @@ export default function App() {
       } else {
         setFirestoreWarning("Firestore bağlantı sorunu. Mevcut görseller korunuyor.");
       }
+      // Restore from cache when Firestore unavailable and no entries loaded yet
+      setEntries(prev => prev.length > 0 ? prev : loadCachedEntries());
       setLoading(false);
     });
 
