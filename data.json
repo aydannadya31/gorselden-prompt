@@ -1,5 +1,10 @@
 {
-  "users": {},
+  "users": {
+    "aydannadya31@gmail.com": {
+      "password": "ag1453",
+      "created": 1781701147248
+    }
+  },
   "history": {},
   "activity": {},
   "notifications": []
