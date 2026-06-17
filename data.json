@@ -5,7 +5,17 @@
       "created": 1781701147248
     }
   },
-  "history": {},
+  "history": {
+    "aydannadya31@gmail.com": [
+      {
+        "model": "nano-gemini",
+        "ref": "yes",
+        "prompt": "\"Referans görselindeki modelin yüzü kesinlikle değişmeden ve bozulmadan kimliği kitli şekilde anatomik bozulmalar olmadan 4k yüksek çözünürlüklü ve yüksek kalite detaylar ile aşağıda verilmiş prompt detaylarına göre yeniden düzenlenecektir.\"\n\nA highly detailed professional photograph. a person with pin-straight and sleek with mirror-like smoothness medium chestnut or caramel brown, shoulder-length or longer hair, face clearly visible, front-facing or three-quarter view, light-to-medium / beige skin tone. wearing rust / auburn ultra-smooth glossy fabric, likely silk satin, latex, patent leather, or liquid-finish material with high sheen clothing. half-body or mid-shot framing. subject positioned at lower-right of the frame, creating dynamic negative space. bright high-key lighting with soft highlights, creating a light and airy atmosphere. moderate exposure, neutral brightness. moderately saturated natural colors. dominant color: rust / auburn, with secondary tones of rust / auburn, deep maroon, rust / auburn. color palette: #988878, #887868, #a88878, #a89888, #d8c8b8. warm color temperature dominates, with amber and golden undertones creating a cozy inviting feel. warm analogous color harmony with reds, oranges and yellows. slightly brighter edges than center, suggesting a wide-angle environmental composition. upper portion is significantly brighter, typical of sky or overhead lighting. landscape scene with a clearly defined horizon line in the upper third of the frame. bright expansive sky area with atmospheric perspective, darker ground below creating depth. very smooth image with minimal texture, possibly out-of-focus background or uniform surface like sky or water. vertical portrait-oriented composition with tall narrow framing, emphasizing height and vertical elements. Aspect ratio 0.56, 4.2 megapixel resolution. 4K, ultra high definition, highly detailed texture rendering, tack-sharp focus, photorealistic quality, professional photography, premium studio quality. Ultra high resolution image with exceptional clarity and fine detail reproduction.",
+        "source": "İstemci (Canvas)",
+        "date": 1781701247980
+      }
+    ]
+  },
   "activity": {
     "aydannadya31@gmail.com": [
       {
