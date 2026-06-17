@@ -629,6 +629,7 @@ export default function App() {
   });
 
   const [notification, setNotification] = useState<string | null>(null);
+  const [firestoreWarning, setFirestoreWarning] = useState<string | null>(null);
   const [dbVersion, setDbVersion] = useState(0);
 
   const toggleSystem = () => {
@@ -1190,9 +1191,10 @@ export default function App() {
         } as ContentEntry;
       });
       
-      // If the Firestore db is empty, populate state with beautifully curated fallback images
+      setFirestoreWarning(null);
+      
       if (allItems.length === 0) {
-        setEntries(getFallbackEntries());
+        setEntries(prev => prev.length > 0 ? prev : getFallbackEntries());
       } else {
         setEntries(allItems);
       }
@@ -1200,13 +1202,13 @@ export default function App() {
       setLoading(false);
     }, (error) => {
       const msg = error instanceof Error ? error.message : String(error);
+      console.warn("Firestore connection issue:", msg);
       if (msg.includes('quota') || msg.includes('RESOURCE_EXHAUSTED')) {
         markCurrentDbExhausted();
+        setFirestoreWarning("Firestore okuma kotası doldu. Mevcut görseller korunuyor. Kota sıfırlanınca senkronizasyon devam edecek.");
+      } else {
+        setFirestoreWarning("Firestore bağlantı sorunu. Mevcut görseller korunuyor.");
       }
-      console.warn("Firestore collection load failed or empty. Sourcing curated archive assets locally.", error);
-      const fallback = getFallbackEntries();
-      const local = localEntriesRef.current;
-      setEntries(local.length > 0 ? [...local, ...fallback] : fallback);
       setLoading(false);
     });
 
@@ -2180,6 +2182,32 @@ export default function App() {
           </div>
         </div>
       </header>
+
+      {/* Quota & Connection Warning Banner - always visible on top of current view */}
+      <AnimatePresence>
+        {(quotaReached || firestoreWarning) && (
+          <motion.div 
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="overflow-hidden"
+          >
+            <div className={`px-6 py-4 text-center text-[10px] font-bold uppercase tracking-widest border-b ${
+              quotaReached 
+                ? 'bg-red-50 border-red-200 text-red-700' 
+                : 'bg-amber-50 border-amber-200 text-amber-700'
+            }`}>
+              <div className="max-w-[1800px] mx-auto flex items-center justify-center gap-3 flex-wrap">
+                {quotaReached && (
+                  <span>{t.quotaReached}{cooldownUntil ? ` — ${t.reset}: ${new Date(cooldownUntil).toLocaleTimeString(currentLang.code === 'TR' ? 'tr-TR' : 'en-US', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Istanbul' })}` : ''}</span>
+                )}
+                {quotaReached && firestoreWarning && <span className="w-1 h-1 rounded-full bg-current opacity-40" />}
+                {firestoreWarning && <span>{firestoreWarning}</span>}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <main className="max-w-[1800px] mx-auto px-6 pt-10 pb-16 relative min-h-[60vh]">
         {view === 'home' ? (
