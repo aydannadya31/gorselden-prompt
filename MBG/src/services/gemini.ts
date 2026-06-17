@@ -199,8 +199,9 @@ export async function generateNewPiece(langCode: string = 'TR', forcedTimestamp?
 
   while (attempts < maxAttempts) {
     attempts++;
+    let currentImageModel: string;
     try {
-      const currentImageModel = getActiveImageModel();
+      currentImageModel = getActiveImageModel();
       let selectedModelType = "";
       try {
         const lastIndexStr = localStorage.getItem("high_fashion_last_model_index");
