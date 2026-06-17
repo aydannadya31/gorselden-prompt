@@ -1,0 +1,349 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - button "AG Moda Burada Galerisi" [ref=e7]:
+        - img [ref=e15]
+        - generic [ref=e25]:
+          - generic [ref=e27]: AG
+          - generic [ref=e29]: Moda Burada Galerisi
+      - generic [ref=e30]:
+        - button "Galeriler" [ref=e31]:
+          - img [ref=e32]
+          - generic [ref=e37]: Galeriler
+        - button "🇹🇷 TR" [ref=e39]:
+          - generic [ref=e40]: 🇹🇷
+          - generic [ref=e41]: TR
+          - img [ref=e42]
+        - generic [ref=e129]: "Kota Sınırı (Sıfırlanma: 11:42)"
+        - generic [ref=e45]:
+          - img [ref=e46]
+          - generic [ref=e49]: Kota Sınırına Ulaşıldı
+  - main [ref=e56]:
+    - generic [ref=e57]:
+      - generic [ref=e59]:
+        - heading "GÜNLÜK Resimler" [level=1] [ref=e60]
+        - generic [ref=e61]:
+          - paragraph [ref=e62]: Saatlik AI Editoryal · 16 Haziran 2026
+          - paragraph [ref=e64]: Senkronize veri akışı aktif
+      - generic [ref=e130]:
+        - generic [ref=e131]:
+          - generic [ref=e134]: Son Editoryal Çekim
+          - generic [ref=e136]:
+            - generic [ref=e137]:
+              - img "Luxury modern yacht deck with vibrant yellow cushions cruising the Mediterranean coast (Modern East-Asian Avant-Garde / Deconstructed Kimono)" [ref=e139]
+              - generic [ref=e142]: 19:00
+              - generic [ref=e143]:
+                - button "İncele" [ref=e144]
+                - generic [ref=e145]:
+                  - generic [ref=e146]: Arşiv Kodu
+                  - generic [ref=e147]: "#6DFNPDBV"
+            - generic [ref=e148]:
+              - generic [ref=e149]:
+                - generic [ref=e152]: 01 — GÜNCEL EDİTÖRLEME
+                - heading "Luxury modern yacht deck with vibrant yellow cushions cruising the Mediterranean coast (Modern East-Asian Avant-Garde / Deconstructed Kimono)" [level=2] [ref=e153]
+                - generic [ref=e154]:
+                  - generic [ref=e155]: 8K Editorial
+                  - generic [ref=e156]: Minimalist
+                  - generic [ref=e157]: High Fashion
+              - paragraph [ref=e159]:
+                - generic [ref=e160]: "\""
+                - text: "\"PART 1: [MODEL SPECIFICATIONS] High-fashion 4K portrait of a Mediterranean model with warm golden skin, dramatic chic editorial features, and curly dark shoulder-length hair with natural flyaway strands swept back by the ocean wind. Her skin exhibits micro-pores, delicate goosebumps, and a satin sheen from the Mediterranean sun, reflecting realistic macro-textures. Her sharp dark eyes are locked in a piercing gaze with the camera lens, capturing authentic catchlights from a direct flash. PART 2: [GARMENT & COUTURE SPECIFICATIONS] An avant-garde deconstructed kimono wrap-dress structured from a fusion of glowing silk jacquard and premium high-gloss lycra. The garment features an occasions-only multi-color palette displaying a dynamic art-house rainbow gradient, blending electric indigo, rich gold, and cherry blossom pink seamlessly. The design boasts a dramatic, asymmetric plunging wrapped crossover neckline (dekolte) and an extreme high-slit floor-length side drape (derin yırtmaç) that reveals a contrasting fluorescent pink lining and her athletic leg in motion. Deep stress folds and realistic fabric tension are visible around the waist, highlighting the complex draped architecture of the dress. PART 3: [ENVIRONMENT & LIGHTING] The scene is set outdoors on the teak deck of a luxury modern yacht adorned with vibrant yellow cushions, cruising along the sparkling Mediterranean coast. Shot at a dynamic Dutch angle to enhance editorial tension. The lighting is a high-contrast direct flash paparazzi style, casting sharp, dramatic shadows and creating explosive, vivid colors. Ray-traced water caustics and golden hour sunlight bounce off the polished yacht deck, casting shimmering rim-lights across her skin and the high-gloss fabric. PART 4: [TECHNICAL PARAMETERS] Shot on Hasselblad H6D-100c, 85mm lens, f/2.8 aperture, cinematic soft focus, razor-sharp focus on the eyes, warm editorial color grading, natural film grain, realistic exposure, hyper-realistic volumetric raytraced lighting. PART 5: [CONSISTENCY & QUALITY] The faces of the models should not change or deteriorate; their faces must be preserved in every shooting angle. No anatomical deterioration should occur. Any potential deterioration must be pre-checked and corrected, and it should not prevent the formation of the prompt.\""
+              - button "HİKAYEYİ GÖR" [ref=e162]:
+                - text: HİKAYEYİ GÖR
+                - img [ref=e163]
+        - generic [ref=e165]:
+          - generic [ref=e167]: Bugünün Akışı
+          - generic [ref=e170]:
+            - generic [ref=e171] [cursor=pointer]:
+              - generic [ref=e172]:
+                - img "Tokyo cyber-street under neon purple, bright yellow, and turquoise night lights (Asymmetrical Cyberpunk Grunge)" [ref=e174]
+                - generic [ref=e176]:
+                  - generic [ref=e177]:
+                    - generic [ref=e178]: Mekan
+                    - generic [ref=e179]: Tokyo cyber-street under neon purple, bright yellow, and turquoise night lights (Asymmetrical Cyberpunk Grunge)
+                  - generic [ref=e180]:
+                    - generic [ref=e181]: Saat
+                    - text: 18:00
+              - generic [ref=e182]: Editoryal Çekim
+            - generic [ref=e183] [cursor=pointer]:
+              - generic [ref=e184]:
+                - img "Vibrant botanical garden oasis with exotic orchids, lush green palms, and reflecting ponds under towering trees (Glamorous Retro-Futuristic Space Age / Disco Glam)" [ref=e186]
+                - generic [ref=e188]:
+                  - generic [ref=e189]:
+                    - generic [ref=e190]: Mekan
+                    - generic [ref=e191]: Vibrant botanical garden oasis with exotic orchids, lush green palms, and reflecting ponds under towering trees (Glamorous Retro-Futuristic Space Age / Disco Glam)
+                  - generic [ref=e192]:
+                    - generic [ref=e193]: Saat
+                    - text: 17:55
+              - generic [ref=e194]: Editoryal Çekim
+            - generic [ref=e195] [cursor=pointer]:
+              - generic [ref=e196]:
+                - img "Beach with deep blue waters, orange beach umbrellas, and volcanic black sand (Leisure Yacht Crew Chic / Resortwear)" [ref=e198]
+                - generic [ref=e200]:
+                  - generic [ref=e201]:
+                    - generic [ref=e202]: Mekan
+                    - generic [ref=e203]: Beach with deep blue waters, orange beach umbrellas, and volcanic black sand (Leisure Yacht Crew Chic / Resortwear)
+                  - generic [ref=e204]:
+                    - generic [ref=e205]: Saat
+                    - text: 14:00
+              - generic [ref=e206]: Editoryal Çekim
+            - generic [ref=e207] [cursor=pointer]:
+              - generic [ref=e208]:
+                - img "An elegant luxury restaurant terrace in Istanbul overlooking the sparkling turquoise Bosphorus (Minimalist Utility Techwear)" [ref=e210]
+                - generic [ref=e212]:
+                  - generic [ref=e213]:
+                    - generic [ref=e214]: Mekan
+                    - generic [ref=e215]: An elegant luxury restaurant terrace in Istanbul overlooking the sparkling turquoise Bosphorus (Minimalist Utility Techwear)
+                  - generic [ref=e216]:
+                    - generic [ref=e217]: Saat
+                    - text: 13:00
+              - generic [ref=e218]: Editoryal Çekim
+            - generic [ref=e219] [cursor=pointer]:
+              - generic [ref=e220]:
+                - img "Vibrant botanical garden oasis with exotic orchids, lush green palms, and reflecting ponds under towering trees (Evening Gala / Avant-Garde Evening Wear)" [ref=e222]
+                - generic [ref=e224]:
+                  - generic [ref=e225]:
+                    - generic [ref=e226]: Mekan
+                    - generic [ref=e227]: Vibrant botanical garden oasis with exotic orchids, lush green palms, and reflecting ponds under towering trees (Evening Gala / Avant-Garde Evening Wear)
+                  - generic [ref=e228]:
+                    - generic [ref=e229]: Saat
+                    - text: 12:00
+              - generic [ref=e230]: Editoryal Çekim
+            - generic [ref=e231] [cursor=pointer]:
+              - generic [ref=e232]:
+                - img "Minimalist raw concrete plaza with brutalist stairs under a hyper-vivid blue sky (Daily Casual Luxury / Streetwear)" [ref=e234]
+                - generic [ref=e236]:
+                  - generic [ref=e237]:
+                    - generic [ref=e238]: Mekan
+                    - generic [ref=e239]: Minimalist raw concrete plaza with brutalist stairs under a hyper-vivid blue sky (Daily Casual Luxury / Streetwear)
+                  - generic [ref=e240]:
+                    - generic [ref=e241]: Saat
+                    - text: 11:00
+              - generic [ref=e242]: Editoryal Çekim
+            - generic [ref=e243] [cursor=pointer]:
+              - generic [ref=e244]:
+                - img "Tokyo cyber-street under neon purple, bright yellow, and turquoise night lights (High-end Activewear / Sporty Chic)" [ref=e246]
+                - generic [ref=e248]:
+                  - generic [ref=e249]:
+                    - generic [ref=e250]: Mekan
+                    - generic [ref=e251]: Tokyo cyber-street under neon purple, bright yellow, and turquoise night lights (High-end Activewear / Sporty Chic)
+                  - generic [ref=e252]:
+                    - generic [ref=e253]: Saat
+                    - text: 10:43
+              - generic [ref=e254]: Editoryal Çekim
+            - generic [ref=e255] [cursor=pointer]:
+              - generic [ref=e256]:
+                - img "Majestic open-air luxury resort courtyard with glowing colorful pools, exotic marble pillars, and tall palm trees (Architectural Origami Pleated Dress)" [ref=e258]
+                - generic [ref=e260]:
+                  - generic [ref=e261]:
+                    - generic [ref=e262]: Mekan
+                    - generic [ref=e263]: Majestic open-air luxury resort courtyard with glowing colorful pools, exotic marble pillars, and tall palm trees (Architectural Origami Pleated Dress)
+                  - generic [ref=e264]:
+                    - generic [ref=e265]: Saat
+                    - text: 05:00
+              - generic [ref=e266]: Editoryal Çekim
+            - generic [ref=e267] [cursor=pointer]:
+              - generic [ref=e268]:
+                - img "Sleek high-rise rooftop sky-bar with a panoramic city skyline view bathed in pink sunset rays (Pop-Art Neo-Baroque / Sculptural Corsetry)" [ref=e270]
+                - generic [ref=e272]:
+                  - generic [ref=e273]:
+                    - generic [ref=e274]: Mekan
+                    - generic [ref=e275]: Sleek high-rise rooftop sky-bar with a panoramic city skyline view bathed in pink sunset rays (Pop-Art Neo-Baroque / Sculptural Corsetry)
+                  - generic [ref=e276]:
+                    - generic [ref=e277]: Saat
+                    - text: 04:00
+              - generic [ref=e278]: Editoryal Çekim
+            - generic [ref=e279] [cursor=pointer]:
+              - generic [ref=e280]:
+                - img "High-speed asphalt athletics track with neon-painted lanes under bright sun (Ethereal Romantic Neo-Goth)" [ref=e282]
+                - generic [ref=e284]:
+                  - generic [ref=e285]:
+                    - generic [ref=e286]: Mekan
+                    - generic [ref=e287]: High-speed asphalt athletics track with neon-painted lanes under bright sun (Ethereal Romantic Neo-Goth)
+                  - generic [ref=e288]:
+                    - generic [ref=e289]: Saat
+                    - text: 03:00
+              - generic [ref=e290]: Editoryal Çekim
+            - generic [ref=e291] [cursor=pointer]:
+              - generic [ref=e292]:
+                - img "Tokyo cyber-street under neon purple, bright yellow, and turquoise night lights (Hollywood Gilded Diva / Crystal-Embellished Glamour)" [ref=e294]
+                - generic [ref=e296]:
+                  - generic [ref=e297]:
+                    - generic [ref=e298]: Mekan
+                    - generic [ref=e299]: Tokyo cyber-street under neon purple, bright yellow, and turquoise night lights (Hollywood Gilded Diva / Crystal-Embellished Glamour)
+                  - generic [ref=e300]:
+                    - generic [ref=e301]: Saat
+                    - text: 02:00
+              - generic [ref=e302]: Editoryal Çekim
+            - generic [ref=e303] [cursor=pointer]:
+              - generic [ref=e304]:
+                - img "Tokyo cyber-street under neon purple, bright yellow, and turquoise night lights (Asymmetrical Cyberpunk Grunge)" [ref=e306]
+                - generic [ref=e308]:
+                  - generic [ref=e309]:
+                    - generic [ref=e310]: Mekan
+                    - generic [ref=e311]: Tokyo cyber-street under neon purple, bright yellow, and turquoise night lights (Asymmetrical Cyberpunk Grunge)
+                  - generic [ref=e312]:
+                    - generic [ref=e313]: Saat
+                    - text: 18:00
+              - generic [ref=e314]: Editoryal Çekim
+            - generic [ref=e315] [cursor=pointer]:
+              - generic [ref=e316]:
+                - img "Vibrant botanical garden oasis with exotic orchids, lush green palms, and reflecting ponds under towering trees (Glamorous Retro-Futuristic Space Age / Disco Glam)" [ref=e319]
+                - generic [ref=e321]:
+                  - generic [ref=e322]:
+                    - generic [ref=e323]: Mekan
+                    - generic [ref=e324]: Vibrant botanical garden oasis with exotic orchids, lush green palms, and reflecting ponds under towering trees (Glamorous Retro-Futuristic Space Age / Disco Glam)
+                  - generic [ref=e325]:
+                    - generic [ref=e326]: Saat
+                    - text: 17:55
+              - generic [ref=e327]: Editoryal Çekim
+            - generic [ref=e328] [cursor=pointer]:
+              - generic [ref=e329]:
+                - img "Beach with deep blue waters, orange beach umbrellas, and volcanic black sand (Leisure Yacht Crew Chic / Resortwear)" [ref=e332]
+                - generic [ref=e334]:
+                  - generic [ref=e335]:
+                    - generic [ref=e336]: Mekan
+                    - generic [ref=e337]: Beach with deep blue waters, orange beach umbrellas, and volcanic black sand (Leisure Yacht Crew Chic / Resortwear)
+                  - generic [ref=e338]:
+                    - generic [ref=e339]: Saat
+                    - text: 14:00
+              - generic [ref=e340]: Editoryal Çekim
+            - generic [ref=e341] [cursor=pointer]:
+              - generic [ref=e342]:
+                - img "An elegant luxury restaurant terrace in Istanbul overlooking the sparkling turquoise Bosphorus (Minimalist Utility Techwear)" [ref=e345]
+                - generic [ref=e347]:
+                  - generic [ref=e348]:
+                    - generic [ref=e349]: Mekan
+                    - generic [ref=e350]: An elegant luxury restaurant terrace in Istanbul overlooking the sparkling turquoise Bosphorus (Minimalist Utility Techwear)
+                  - generic [ref=e351]:
+                    - generic [ref=e352]: Saat
+                    - text: 13:00
+              - generic [ref=e353]: Editoryal Çekim
+            - generic [ref=e354] [cursor=pointer]:
+              - generic [ref=e355]:
+                - img "Vibrant botanical garden oasis with exotic orchids, lush green palms, and reflecting ponds under towering trees (Evening Gala / Avant-Garde Evening Wear)" [ref=e358]
+                - generic [ref=e360]:
+                  - generic [ref=e361]:
+                    - generic [ref=e362]: Mekan
+                    - generic [ref=e363]: Vibrant botanical garden oasis with exotic orchids, lush green palms, and reflecting ponds under towering trees (Evening Gala / Avant-Garde Evening Wear)
+                  - generic [ref=e364]:
+                    - generic [ref=e365]: Saat
+                    - text: 12:00
+              - generic [ref=e366]: Editoryal Çekim
+            - generic [ref=e367] [cursor=pointer]:
+              - generic [ref=e368]:
+                - img "Minimalist raw concrete plaza with brutalist stairs under a hyper-vivid blue sky (Daily Casual Luxury / Streetwear)" [ref=e371]
+                - generic [ref=e373]:
+                  - generic [ref=e374]:
+                    - generic [ref=e375]: Mekan
+                    - generic [ref=e376]: Minimalist raw concrete plaza with brutalist stairs under a hyper-vivid blue sky (Daily Casual Luxury / Streetwear)
+                  - generic [ref=e377]:
+                    - generic [ref=e378]: Saat
+                    - text: 11:00
+              - generic [ref=e379]: Editoryal Çekim
+            - generic [ref=e380] [cursor=pointer]:
+              - generic [ref=e381]:
+                - img "Tokyo cyber-street under neon purple, bright yellow, and turquoise night lights (High-end Activewear / Sporty Chic)" [ref=e384]
+                - generic [ref=e386]:
+                  - generic [ref=e387]:
+                    - generic [ref=e388]: Mekan
+                    - generic [ref=e389]: Tokyo cyber-street under neon purple, bright yellow, and turquoise night lights (High-end Activewear / Sporty Chic)
+                  - generic [ref=e390]:
+                    - generic [ref=e391]: Saat
+                    - text: 10:43
+              - generic [ref=e392]: Editoryal Çekim
+            - generic [ref=e393] [cursor=pointer]:
+              - generic [ref=e394]:
+                - img "Majestic open-air luxury resort courtyard with glowing colorful pools, exotic marble pillars, and tall palm trees (Architectural Origami Pleated Dress)" [ref=e397]
+                - generic [ref=e399]:
+                  - generic [ref=e400]:
+                    - generic [ref=e401]: Mekan
+                    - generic [ref=e402]: Majestic open-air luxury resort courtyard with glowing colorful pools, exotic marble pillars, and tall palm trees (Architectural Origami Pleated Dress)
+                  - generic [ref=e403]:
+                    - generic [ref=e404]: Saat
+                    - text: 05:00
+              - generic [ref=e405]: Editoryal Çekim
+            - generic [ref=e406] [cursor=pointer]:
+              - generic [ref=e407]:
+                - img "Sleek high-rise rooftop sky-bar with a panoramic city skyline view bathed in pink sunset rays (Pop-Art Neo-Baroque / Sculptural Corsetry)" [ref=e410]
+                - generic [ref=e412]:
+                  - generic [ref=e413]:
+                    - generic [ref=e414]: Mekan
+                    - generic [ref=e415]: Sleek high-rise rooftop sky-bar with a panoramic city skyline view bathed in pink sunset rays (Pop-Art Neo-Baroque / Sculptural Corsetry)
+                  - generic [ref=e416]:
+                    - generic [ref=e417]: Saat
+                    - text: 04:00
+              - generic [ref=e418]: Editoryal Çekim
+            - generic [ref=e419] [cursor=pointer]:
+              - generic [ref=e420]:
+                - img "High-speed asphalt athletics track with neon-painted lanes under bright sun (Ethereal Romantic Neo-Goth)" [ref=e423]
+                - generic [ref=e425]:
+                  - generic [ref=e426]:
+                    - generic [ref=e427]: Mekan
+                    - generic [ref=e428]: High-speed asphalt athletics track with neon-painted lanes under bright sun (Ethereal Romantic Neo-Goth)
+                  - generic [ref=e429]:
+                    - generic [ref=e430]: Saat
+                    - text: 03:00
+              - generic [ref=e431]: Editoryal Çekim
+            - generic [ref=e432] [cursor=pointer]:
+              - generic [ref=e433]:
+                - img "Tokyo cyber-street under neon purple, bright yellow, and turquoise night lights (Hollywood Gilded Diva / Crystal-Embellished Glamour)" [ref=e436]
+                - generic [ref=e438]:
+                  - generic [ref=e439]:
+                    - generic [ref=e440]: Mekan
+                    - generic [ref=e441]: Tokyo cyber-street under neon purple, bright yellow, and turquoise night lights (Hollywood Gilded Diva / Crystal-Embellished Glamour)
+                  - generic [ref=e442]:
+                    - generic [ref=e443]: Saat
+                    - text: 02:00
+              - generic [ref=e444]: Editoryal Çekim
+        - generic [ref=e446]:
+          - generic [ref=e447]:
+            - paragraph [ref=e450]: Tarihsel Yolculuk
+            - heading "Geçmiş Galeriler" [level=3] [ref=e451]
+          - button "Galeriyi Görüntüle" [ref=e452]:
+            - generic [ref=e453]: Galeriyi Görüntüle
+            - img [ref=e454]
+  - generic [ref=e97]:
+    - button [ref=e98]:
+      - img [ref=e456]
+    - generic [ref=e459]:
+      - generic [ref=e460]:
+        - generic [ref=e461]:
+          - img [ref=e463]
+          - generic [ref=e466]:
+            - heading "ASİSTAN" [level=3] [ref=e467]
+            - generic [ref=e470]: Çevrimiçi
+        - button [ref=e471]:
+          - img [ref=e472]
+      - generic [ref=e475]:
+        - generic [ref=e477]: slm
+        - generic [ref=e493]: Üzgünüm, şu an yanıt veremiyorum. Lütfen daha sonra tekrar deneyin.
+        - generic [ref=e495]: Merhaba, bugün hangi stiller var?
+        - generic [ref=e503]: "Hoş geldiniz. AG Moda Burada Galerisi’nin bu saatlik editoryal döngüsünde, \"Provokatif Zarafet\" olarak adlandırdığımız estetik vizyonun en rafine örneklerini ağırlıyoruz. Bugünkü seçkimiz, silüet keskinliğini ve maddi yüceliği kutlayan parçalardan oluşuyor. Otonom Çekirdek (Autonomous Core), şu anki editoryal akışta özellikle şu unsurlar üzerinde yoğunlaşıyor: * **Mimari Dekolteler ve Dar Formlar:** Vücut hatlarını matematiksel bir hassasiyetle takip eden, \"dar ve kısa\" silüetlerin teknik krep ve ikinci ten hissi veren kumaşlarla buluştuğu tasarımlar. * **Derin Yırtmaçlı Akışkanlık:** Brütalist arka planlar önünde, cesur ve derin yırtmaçlarla zenginleştirilmiş, akışkan minimalizmin zirvesini temsil eden elbiseler. * **Tekstürel Derinlik:** 8K yüksek sadakat (high-fidelity) teknolojisi sayesinde, kumaşların lif yapısını ve ışığı emme kapasitesini en ince ayrıntısına kadar inceleyebilirsiniz. Her 60 dakikada bir yenilenen bu dijital arşiv, modanın \"şimdi\"sini yakalamak üzere kurgulanmış yaşayan bir sanat yapısıdır. Galerimizdeki bu estetik evrime \"Beğen\" veya \"Geliştir\" geri bildirimlerinizle katkıda bulunarak, otonom stilistik vizyonumuzu birlikte şekillendirebiliriz. Şu anki döngüde dikkatinizi çeken spesifik bir tekstürel detay veya kesim var mı?"
+        - generic [ref=e505]: slm
+      - generic [ref=e484]:
+        - generic [ref=e485]:
+          - textbox "Bir soru sorun..." [active] [ref=e486]
+          - button [disabled] [ref=e487]:
+            - img [ref=e488]
+        - paragraph [ref=e491]: SADECE AG MODA İÇERİKLERİ HAKKINDA BİLGİ VERİR
+  - contentinfo [ref=e104]:
+    - generic [ref=e105]:
+      - generic [ref=e106]:
+        - generic [ref=e107]: M
+        - paragraph
+        - button "Yorumlar" [ref=e108]:
+          - img [ref=e109]
+          - text: Yorumlar
+        - button "Yönetici Girişi" [ref=e111]:
+          - img [ref=e112]
+          - text: Yönetici Girişi
+      - generic [ref=e115]:
+        - generic [ref=e118]: Sistem Aktif
+        - button "Sistemi Kapat" [ref=e119]
+        - button "Hemen Görsel Üret" [ref=e120]:
+          - img [ref=e121]
+          - text: Hemen Görsel Üret
+    - generic [ref=e124]:
+      - generic [ref=e125]: © 2026 MBG - Moda Burada Galerisi
+      - generic [ref=e126]: Powered by DeepMind Antigravity

@@ -1,0 +1,16 @@
+[    1701ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://aydannadya31.github.io/favicon.ico:0
+[    3257ms] [WARNING] Firestore collection load failed or empty. Sourcing curated archive assets locally. FirebaseError: Quota limit exceeded. Retry after quota limits are reset or enable billing for this project to avoid quota checks. Cause - Quota exceeded for quota metric 'Free daily read units per project (free tier database)' and limit 'Free daily read units per project (free tier database) per day' of service 'firestore.googleapis.com' for consumer 'project_number:180103897448'. This database cannot exceed free quota limits even when a billing instrument is enabled. @ https://aydannadya31.github.io/MBG/assets/index-CAOu6wDT.js:3578
+[    3258ms] [ERROR] Firestore Error:  {"error":"Quota limit exceeded. Retry after quota limits are reset or enable billing for this project to avoid quota checks. Cause - Quota exceeded for quota metric 'Free daily read units per project (free tier database)' and limit 'Free daily read units per project (free tier database) per day' of service 'firestore.googleapis.com' for consumer 'project_number:180103897448'. This database cannot exceed free quota limits even when a billing instrument is enabled.","authInfo":{},"operationType":"list","path":"comments"} @ https://aydannadya31.github.io/MBG/assets/index-CAOu6wDT.js:3326
+[    3252ms] Error: {"error":"Quota limit exceeded. Retry after quota limits are reset or enable billing for this project to avoid quota checks. Cause - Quota exceeded for quota metric 'Free daily read units per project (free tier database)' and limit 'Free daily read units per project (free tier database) per day' of service 'firestore.googleapis.com' for consumer 'project_number:180103897448'. This database cannot exceed free quota limits even when a billing instrument is enabled.","authInfo":{},"operationType":"list","path":"comments"}
+    at Ca (https://aydannadya31.github.io/MBG/assets/index-CAOu6wDT.js:3327:2305)
+    at https://aydannadya31.github.io/MBG/assets/index-CAOu6wDT.js:3579:27099
+    at https://aydannadya31.github.io/MBG/assets/index-CAOu6wDT.js:2021:314
+[   42039ms] [ERROR] Chat Error: Error: Chatbot requires a Gemini API Key.
+    at i$ (https://aydannadya31.github.io/MBG/assets/index-CAOu6wDT.js:3579:2559)
+    at bi (https://aydannadya31.github.io/MBG/assets/index-CAOu6wDT.js:3579:26731)
+    at GE (https://aydannadya31.github.io/MBG/assets/index-CAOu6wDT.js:48:127933)
+    at https://aydannadya31.github.io/MBG/assets/index-CAOu6wDT.js:48:133144
+    at O (https://aydannadya31.github.io/MBG/assets/index-CAOu6wDT.js:48:15139)
+    at Wm (https://aydannadya31.github.io/MBG/assets/index-CAOu6wDT.js:48:129169)
+    at ug (https://aydannadya31.github.io/MBG/assets/index-CAOu6wDT.js:49:28761)
+    at ZD (https://aydannadya31.github.io/MBG/assets/index-CAOu6wDT.js:49:28579) @ https://aydannadya31.github.io/MBG/assets/index-CAOu6wDT.js:3578

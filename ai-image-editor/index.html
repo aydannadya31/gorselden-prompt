@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Görsel Düzenleyici - 3'lü Üretim</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header class="header">
+    <div class="container">
+      <div class="logo">
+        <span class="logo-icon">✦</span>
+        <span>AI Studio</span>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <h1>Görselini Yükle, <span class="gradient-text">Kıyafetini Seç</span></h1>
+      <p>Yapay zeka ile görselindeki modelin kıyafetini değiştir. 3 farklı araç aynı anda üretir.</p>
+    </div>
+  </section>
+
+  <section class="upload-section">
+    <div class="container">
+      <div class="upload-row">
+        <div class="upload-area" id="uploadArea">
+          <div class="upload-content" id="uploadContent">
+            <div class="upload-icon">☝</div>
+            <h3>Model Görseli Yükle</h3>
+            <p>JPEG, PNG veya WEBP · 20MB'a kadar</p>
+            <button class="btn btn-secondary" id="uploadBtn">Dosya Seç</button>
+          </div>
+          <div class="preview-area hidden" id="previewArea">
+            <img id="previewImage" alt="" />
+            <button class="btn btn-outline" id="changeImageBtn">Değiştir</button>
+          </div>
+          <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" hidden />
+        </div>
+
+        <div class="prompt-box">
+          <label>Ek talimat (isteğe bağlı)</label>
+          <div class="prompt-input-wrapper">
+            <textarea id="promptInput" rows="3" placeholder='Örn: "modelin saçını topuz yap", "daha gülümseyen bir ifade", "plaj havlusu ekle"'></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="options-section">
+    <div class="container">
+      <div class="options-grid">
+
+        <div class="option-group">
+          <label>Kıyafet Tipi</label>
+          <div class="chip-group" id="clothingGroup">
+            <button class="chip" data-value="gündelik">Gündelik</button>
+            <button class="chip" data-value="spor">Spor</button>
+            <button class="chip" data-value="parti">Parti</button>
+            <button class="chip" data-value="plaj">Plaj</button>
+            <button class="chip" data-value="kısa etek">Kısa Etek</button>
+            <button class="chip" data-value="straplez">Straplez</button>
+            <button class="chip" data-value="düşük kalp yaka">Düşük Kalp Yaka</button>
+            <button class="chip" data-value="derin yırtmaç">Derin Yırtmaç</button>
+            <button class="chip" data-value="dekolteli">Dekolteli</button>
+            <button class="chip" data-value="parti+straplez">Parti × Straplez</button>
+            <button class="chip" data-value="spor+kısa etek">Spor × Kısa Etek</button>
+            <button class="chip" data-value="plaj+dekolteli">Plaj × Dekolteli</button>
+            <button class="chip" data-value="gündelik+düşük kalp yaka">Gündelik × Düşük Kalp Yaka</button>
+            <button class="chip" data-value="parti+derin yırtmaç">Parti × Derin Yırtmaç</button>
+          </div>
+        </div>
+
+        <div class="option-group">
+          <label>Ortam / Arka Plan</label>
+          <div class="chip-group" id="backgroundGroup">
+            <button class="chip chip-selected" data-value="dış mekan gündüz">Dış Mekan Gündüz</button>
+            <button class="chip" data-value="dış mekan gece">Dış Mekan Gece</button>
+            <button class="chip" data-value="plaj gündüz">Plaj Gündüz</button>
+            <button class="chip" data-value="şehir gece">Şehir Gece</button>
+            <button class="chip" data-value="park gündüz">Park Gündüz</button>
+            <button class="chip" data-value="sokak gece">Sokak Gece</button>
+            <button class="chip" data-value="dağ gündüz">Dağ Manzarası</button>
+            <button class="chip" data-value="havuz kenarı">Havuz Kenarı</button>
+          </div>
+        </div>
+
+        <div class="option-group">
+          <label>Vücut Tipi & Poz</label>
+          <div class="chip-group" id="bodyGroup">
+            <button class="chip chip-selected" data-value="full body">Full Body</button>
+            <button class="chip" data-value="yarı boy">Yarı Boy</button>
+            <button class="chip" data-value="portre">Portre</button>
+            <button class="chip" data-value="yandan">Yandan Poz</button>
+            <button class="chip" data-value="oturur">Oturur</button>
+            <button class="chip" data-value="ayakta">Ayakta</button>
+            <button class="chip" data-value="yürür">Yürür</button>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="quality-bar">
+        <span>Kalite</span>
+        <div class="toggle-group">
+          <label class="toggle">
+            <input type="checkbox" id="ultraQuality" checked />
+            <span class="toggle-label">Ultra Kalite (4K)</span>
+          </label>
+          <label class="toggle">
+            <input type="checkbox" id="extraDetails" checked />
+            <span class="toggle-label">Ekstra Detay</span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="generate-section">
+    <div class="container">
+      <button class="btn btn-generate" id="generateBtn">✦ Üretimi Başlat</button>
+      <p class="generate-hint">3 yapay zeka aracı aynı anda üretime başlayacak. Sonuçlar aşağıda görünecek.</p>
+    </div>
+  </section>
+
+  <section class="results-section">
+    <div class="container">
+      <div class="results-grid" id="resultsGrid">
+        <div class="result-card" id="resultPromli">
+          <div class="result-header">
+            <div class="result-avatar" style="background:#6c5ce7">P</div>
+            <div>
+              <h3>Promli</h3>
+              <span class="result-domain">promli.com</span>
+            </div>
+          </div>
+          <div class="result-frame">
+            <div class="result-placeholder">
+              <span>Görsel yükleyip<br/>üretimi başlatın</span>
+            </div>
+            <img class="result-img hidden" alt="" />
+          </div>
+          <a class="btn btn-primary result-link" href="https://promli.com/tr/app/pictures/create/image-editor" target="_blank" rel="noopener">Sitede Aç</a>
+        </div>
+
+        <div class="result-card" id="resultZimage">
+          <div class="result-header">
+            <div class="result-avatar" style="background:#0984e3">Z</div>
+            <div>
+              <h3>Z-Image-Edit</h3>
+              <span class="result-domain">zimageturbo.ai</span>
+            </div>
+          </div>
+          <div class="result-frame">
+            <div class="result-placeholder">
+              <span>Görsel yükleyip<br/>üretimi başlatın</span>
+            </div>
+            <img class="result-img hidden" alt="" />
+          </div>
+          <a class="btn btn-primary result-link" href="https://zimageturbo.ai/tr/z-image-edit" target="_blank" rel="noopener">Sitede Aç</a>
+        </div>
+
+        <div class="result-card" id="resultEasemate">
+          <div class="result-header">
+            <div class="result-avatar" style="background:#e17055">E</div>
+            <div>
+              <h3>EaseMate AI</h3>
+              <span class="result-domain">easemate.ai</span>
+            </div>
+          </div>
+          <div class="result-frame">
+            <div class="result-placeholder">
+              <span>Görsel yükleyip<br/>üretimi başlatın</span>
+            </div>
+            <img class="result-img hidden" alt="" />
+          </div>
+          <a class="btn btn-primary result-link" href="https://www.easemate.ai/tr/gpt-image-1-5-image-generator" target="_blank" rel="noopener">Sitede Aç</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="instructions-section">
+    <div class="container">
+      <div class="instruction-box">
+        <h3>⚠️ Önemli Üretim Kuralları</h3>
+        <p>Üretim sırasında aşağıdaki kurallara uyulması için promptlar otomatik olarak optimize edilir:</p>
+        <ul>
+          <li>Anatomik bozulma olmayacak (fazla parmak, el, ayak, kol, bacak vb.)</li>
+          <li>Çarpık veya sarkmış yüz, deforme yüz hatları olmayacak</li>
+          <li>Doğal ten rengi ve tonları korunacak</li>
+          <li>Aşırı parlak veya aşırı karanlık ortam olmayacak</li>
+          <li>Tüm ışık koşullarında model net ve seçilir olacak</li>
+          <li>4K yüksek çözünürlük ve yüksek detay</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <p>AI Studio — Promli, Z-Image-Edit & EaseMate AI entegrasyonu</p>
+    </div>
+  </footer>
+
+  <div class="toast hidden" id="toast"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

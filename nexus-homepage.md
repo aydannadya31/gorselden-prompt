@@ -1,0 +1,20 @@
+- generic [ref=e11]:
+  - img [ref=e14]
+  - heading "A+F=C.B" [level=1] [ref=e30]
+  - paragraph [ref=e31]: Yeni nesil iletişim protokolü ile kesintisiz ve şık bir deneyim.
+  - generic [ref=e32]:
+    - generic [ref=e33]:
+      - img [ref=e35]
+      - generic [ref=e37]: HIZLI
+    - generic [ref=e38]:
+      - img [ref=e40]
+      - generic [ref=e42]: GÜVENLİ
+    - generic [ref=e43]:
+      - img [ref=e45]
+      - generic [ref=e48]: EVRENSEL
+  - button "Google ile Giriş Yap" [ref=e49]:
+    - img [ref=e51]
+    - text: Google ile Giriş Yap
+  - generic [ref=e54]:
+    - paragraph [ref=e55]: NEXUS PROTOCOL v2.0
+    - button "Yönetim" [ref=e56]

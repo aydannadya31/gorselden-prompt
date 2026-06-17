@@ -1,0 +1,65 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - button "AG Moda Burada Galerisi" [ref=e7]:
+        - img [ref=e15]
+        - generic [ref=e25]:
+          - generic [ref=e27]: AG
+          - generic [ref=e29]: Moda Burada Galerisi
+      - generic [ref=e30]:
+        - button "Galeriler" [ref=e31]:
+          - img [ref=e32]
+          - generic [ref=e37]: Galeriler
+        - button "🇹🇷 TR" [ref=e39]:
+          - generic [ref=e40]: 🇹🇷
+          - generic [ref=e41]: TR
+          - img [ref=e42]
+        - generic [ref=e44]:
+          - generic [ref=e45]:
+            - img [ref=e46]
+            - generic [ref=e49]: 60:00
+          - generic [ref=e51]:
+            - generic [ref=e54]: TREND_SYNC
+            - generic [ref=e55]: 0%
+  - main [ref=e56]:
+    - generic [ref=e57]:
+      - generic [ref=e59]:
+        - heading "GÜNLÜK Resimler" [level=1] [ref=e60]
+        - generic [ref=e61]:
+          - paragraph [ref=e62]: Saatlik AI Editoryal · 15 Haziran 2026
+          - paragraph [ref=e64]: Senkronize veri akışı aktif
+      - generic [ref=e65]:
+        - img [ref=e72]
+        - generic [ref=e77]:
+          - generic [ref=e78]:
+            - heading "DATALINK_IN_PROGRESS" [level=3] [ref=e79]
+            - paragraph [ref=e80]: 4K Ortam Hazırlanıyor...
+          - generic [ref=e83]:
+            - generic [ref=e84]: fetching_encrypted_assets
+            - generic [ref=e85]: SYNC_STATE_ACTIVE
+          - generic [ref=e86]:
+            - generic [ref=e89]: Buffer
+            - generic [ref=e92]: Stream
+            - generic [ref=e95]: Render
+  - button [ref=e97]:
+    - img [ref=e98]
+  - contentinfo [ref=e103]:
+    - generic [ref=e104]:
+      - generic [ref=e105]:
+        - generic [ref=e106]: M
+        - paragraph
+        - button "Yorumlar" [ref=e107]:
+          - img [ref=e108]
+          - text: Yorumlar
+        - button "Yönetici Girişi" [ref=e110]:
+          - img [ref=e111]
+          - text: Yönetici Girişi
+      - generic [ref=e114]:
+        - generic [ref=e117]: Sistem Aktif
+        - button "Sistemi Kapat" [ref=e118]
+        - button "Hemen Görsel Üret" [ref=e119]:
+          - img [ref=e120]
+          - text: Hemen Görsel Üret
+    - generic [ref=e123]:
+      - generic [ref=e124]: © 2026 MBG - Moda Burada Galerisi
+      - generic [ref=e125]: Powered by DeepMind Antigravity

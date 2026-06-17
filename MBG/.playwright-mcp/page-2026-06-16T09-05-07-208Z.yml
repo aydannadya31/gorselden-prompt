@@ -1,0 +1,208 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - button "AG Moda Burada Galerisi" [ref=e7]:
+        - img [ref=e15]
+        - generic [ref=e25]:
+          - generic [ref=e27]: AG
+          - generic [ref=e29]: Moda Burada Galerisi
+      - generic [ref=e30]:
+        - button "Galeriler" [ref=e31]:
+          - img [ref=e32]
+          - generic [ref=e37]: Galeriler
+        - button "🇹🇷 TR" [ref=e39]:
+          - generic [ref=e40]: 🇹🇷
+          - generic [ref=e41]: TR
+          - img [ref=e42]
+  - main [ref=e44]:
+    - generic [ref=e45]:
+      - generic [ref=e47]:
+        - heading "GÜNLÜK Resimler" [level=1] [ref=e48]
+        - generic [ref=e49]:
+          - paragraph [ref=e50]: Saatlik AI Editoryal · 16 Haziran 2026
+          - paragraph [ref=e52]: Senkronize veri akışı aktif
+      - generic [ref=e115]:
+        - generic [ref=e116]:
+          - generic [ref=e119]: Son Editoryal Çekim
+          - generic [ref=e121]:
+            - generic [ref=e122]:
+              - img "Art Deco Hotel Lobby" [ref=e124]
+              - generic [ref=e127]: 12:03
+              - generic [ref=e128]:
+                - button "İncele" [ref=e129]
+                - generic [ref=e130]:
+                  - generic [ref=e131]: Arşiv Kodu
+                  - generic [ref=e132]: "#_ENTRY_1"
+            - generic [ref=e133]:
+              - generic [ref=e134]:
+                - generic [ref=e137]: 01 — GÜNCEL EDİTÖRLEME
+                - heading "Art Deco Hotel Lobby" [level=2] [ref=e138]
+                - generic [ref=e139]:
+                  - generic [ref=e140]: 8K Editorial
+                  - generic [ref=e141]: Minimalist
+                  - generic [ref=e142]: High Fashion
+              - paragraph [ref=e144]:
+                - generic [ref=e145]: "\""
+                - text: "\"A high-end 8K commercial fashion photography of a female model wearing a skin-tight high-fashion yellow silhouette knit dress emphasizing body curvature. Art Deco hotel lobby background, soft warm candle light, raw color tones, professional posture, face preserved.\""
+              - button "HİKAYEYİ GÖR" [ref=e147]:
+                - text: HİKAYEYİ GÖR
+                - img [ref=e148]
+        - generic [ref=e150]:
+          - generic [ref=e152]: Bugünün Akışı
+          - generic [ref=e155]:
+            - generic [ref=e156] [cursor=pointer]:
+              - generic [ref=e157]:
+                - img "Parisian Balcony" [ref=e159]
+                - generic [ref=e161]:
+                  - generic [ref=e162]:
+                    - generic [ref=e163]: Mekan
+                    - generic [ref=e164]: Parisian Balcony
+                  - generic [ref=e165]:
+                    - generic [ref=e166]: Saat
+                    - text: 11:03
+              - generic [ref=e167]: Editoryal Çekim
+            - generic [ref=e168] [cursor=pointer]:
+              - generic [ref=e169]:
+                - img "Brutalist Concrete Plaza" [ref=e171]
+                - generic [ref=e173]:
+                  - generic [ref=e174]:
+                    - generic [ref=e175]: Mekan
+                    - generic [ref=e176]: Brutalist Concrete Plaza
+                  - generic [ref=e177]:
+                    - generic [ref=e178]: Saat
+                    - text: 10:03
+              - generic [ref=e179]: Editoryal Çekim
+            - generic [ref=e180] [cursor=pointer]:
+              - generic [ref=e181]:
+                - img "Cloudy Wildflower Meadow" [ref=e183]
+                - generic [ref=e185]:
+                  - generic [ref=e186]:
+                    - generic [ref=e187]: Mekan
+                    - generic [ref=e188]: Cloudy Wildflower Meadow
+                  - generic [ref=e189]:
+                    - generic [ref=e190]: Saat
+                    - text: 09:03
+              - generic [ref=e191]: Editoryal Çekim
+            - generic [ref=e192] [cursor=pointer]:
+              - generic [ref=e193]:
+                - img "Tokyo Street at Night" [ref=e195]
+                - generic [ref=e197]:
+                  - generic [ref=e198]:
+                    - generic [ref=e199]: Mekan
+                    - generic [ref=e200]: Tokyo Street at Night
+                  - generic [ref=e201]:
+                    - generic [ref=e202]: Saat
+                    - text: 08:03
+              - generic [ref=e203]: Editoryal Çekim
+            - generic [ref=e204] [cursor=pointer]:
+              - generic [ref=e205]:
+                - img "Desert Dunes" [ref=e207]
+                - generic [ref=e209]:
+                  - generic [ref=e210]:
+                    - generic [ref=e211]: Mekan
+                    - generic [ref=e212]: Desert Dunes
+                  - generic [ref=e213]:
+                    - generic [ref=e214]: Saat
+                    - text: 07:03
+              - generic [ref=e215]: Editoryal Çekim
+            - generic [ref=e216] [cursor=pointer]:
+              - generic [ref=e217]:
+                - img "Parisian Balcony" [ref=e219]
+                - generic [ref=e221]:
+                  - generic [ref=e222]:
+                    - generic [ref=e223]: Mekan
+                    - generic [ref=e224]: Parisian Balcony
+                  - generic [ref=e225]:
+                    - generic [ref=e226]: Saat
+                    - text: 11:03
+              - generic [ref=e227]: Editoryal Çekim
+            - generic [ref=e228] [cursor=pointer]:
+              - generic [ref=e229]:
+                - img "Brutalist Concrete Plaza" [ref=e231]
+                - generic [ref=e233]:
+                  - generic [ref=e234]:
+                    - generic [ref=e235]: Mekan
+                    - generic [ref=e236]: Brutalist Concrete Plaza
+                  - generic [ref=e237]:
+                    - generic [ref=e238]: Saat
+                    - text: 10:03
+              - generic [ref=e239]: Editoryal Çekim
+            - generic [ref=e240] [cursor=pointer]:
+              - generic [ref=e241]:
+                - img "Cloudy Wildflower Meadow" [ref=e243]
+                - generic [ref=e245]:
+                  - generic [ref=e246]:
+                    - generic [ref=e247]: Mekan
+                    - generic [ref=e248]: Cloudy Wildflower Meadow
+                  - generic [ref=e249]:
+                    - generic [ref=e250]: Saat
+                    - text: 09:03
+              - generic [ref=e251]: Editoryal Çekim
+            - generic [ref=e252] [cursor=pointer]:
+              - generic [ref=e253]:
+                - img "Tokyo Street at Night" [ref=e255]
+                - generic [ref=e257]:
+                  - generic [ref=e258]:
+                    - generic [ref=e259]: Mekan
+                    - generic [ref=e260]: Tokyo Street at Night
+                  - generic [ref=e261]:
+                    - generic [ref=e262]: Saat
+                    - text: 08:03
+              - generic [ref=e263]: Editoryal Çekim
+            - generic [ref=e264] [cursor=pointer]:
+              - generic [ref=e265]:
+                - img "Desert Dunes" [ref=e267]
+                - generic [ref=e269]:
+                  - generic [ref=e270]:
+                    - generic [ref=e271]: Mekan
+                    - generic [ref=e272]: Desert Dunes
+                  - generic [ref=e273]:
+                    - generic [ref=e274]: Saat
+                    - text: 07:03
+              - generic [ref=e275]: Editoryal Çekim
+        - generic [ref=e277]:
+          - generic [ref=e278]:
+            - paragraph [ref=e281]: Tarihsel Yolculuk
+            - heading "Geçmiş Galeriler" [level=3] [ref=e282]
+          - button "Galeriyi Görüntüle" [ref=e283]:
+            - generic [ref=e284]: Galeriyi Görüntüle
+            - img [ref=e285]
+  - generic [ref=e85]:
+    - button [ref=e86]:
+      - img [ref=e287]
+    - generic [ref=e290]:
+      - generic [ref=e291]:
+        - generic [ref=e292]:
+          - img [ref=e294]
+          - generic [ref=e297]:
+            - heading "ASİSTAN" [level=3] [ref=e298]
+            - generic [ref=e301]: Çevrimiçi
+        - button [ref=e302]:
+          - img [ref=e303]
+      - generic [ref=e321]: Merhaba, bugün hangi stiller var?
+      - generic [ref=e312]:
+        - generic [ref=e313]:
+          - textbox "Bir soru sorun..." [active] [ref=e314]
+          - button [disabled] [ref=e315]:
+            - img [ref=e316]
+        - paragraph [ref=e319]: SADECE AG MODA İÇERİKLERİ HAKKINDA BİLGİ VERİR
+  - contentinfo [ref=e92]:
+    - generic [ref=e93]:
+      - generic [ref=e94]:
+        - generic [ref=e95]: M
+        - paragraph
+        - button "Yorumlar" [ref=e96]:
+          - img [ref=e97]
+          - text: Yorumlar
+        - button "Yönetici Girişi" [ref=e99]:
+          - img [ref=e100]
+          - text: Yönetici Girişi
+      - generic [ref=e103]:
+        - generic [ref=e106]: Sistem Aktif
+        - button "Sistemi Kapat" [ref=e107]
+        - button "Hemen Görsel Üret" [ref=e108]:
+          - img [ref=e109]
+          - text: Hemen Görsel Üret
+    - generic [ref=e112]:
+      - generic [ref=e113]: © 2026 MBG - Moda Burada Galerisi
+      - generic [ref=e114]: Powered by DeepMind Antigravity

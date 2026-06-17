@@ -1,0 +1,58 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - button "AG Moda Burada Galerisi" [ref=e7]:
+        - img [ref=e15]
+        - generic [ref=e25]:
+          - generic [ref=e27]: AG
+          - generic [ref=e29]: Moda Burada Galerisi
+      - generic [ref=e30]:
+        - button "Galeriler" [ref=e31]:
+          - img [ref=e32]
+          - generic [ref=e37]: Galeriler
+        - button "🇹🇷 TR" [ref=e39]:
+          - generic [ref=e40]: 🇹🇷
+          - generic [ref=e41]: TR
+          - img [ref=e42]
+  - main [ref=e44]:
+    - generic [ref=e45]:
+      - generic [ref=e47]:
+        - heading "GÜNLÜK Resimler" [level=1] [ref=e48]
+        - generic [ref=e49]:
+          - paragraph [ref=e50]: Saatlik AI Editoryal · 16 Haziran 2026
+          - paragraph [ref=e52]: Senkronize veri akışı aktif
+      - generic [ref=e53]:
+        - img [ref=e60]
+        - generic [ref=e65]:
+          - generic [ref=e66]:
+            - heading "DATALINK_IN_PROGRESS" [level=3] [ref=e67]
+            - paragraph [ref=e68]: 4K Ortam Hazırlanıyor...
+          - generic [ref=e72]:
+            - generic [ref=e73]: fetching_encrypted_assets
+            - generic [ref=e74]: SYNC_STATE_ACTIVE
+          - generic [ref=e75]:
+            - generic [ref=e78]: Buffer
+            - generic [ref=e81]: Stream
+            - generic [ref=e84]: Render
+  - button [ref=e86]:
+    - img [ref=e87]
+  - contentinfo [ref=e92]:
+    - generic [ref=e93]:
+      - generic [ref=e94]:
+        - generic [ref=e95]: M
+        - paragraph
+        - button "Yorumlar" [ref=e96]:
+          - img [ref=e97]
+          - text: Yorumlar
+        - button "Yönetici Girişi" [ref=e99]:
+          - img [ref=e100]
+          - text: Yönetici Girişi
+      - generic [ref=e103]:
+        - generic [ref=e106]: Sistem Aktif
+        - button "Sistemi Kapat" [ref=e107]
+        - button "Hemen Görsel Üret" [ref=e108]:
+          - img [ref=e109]
+          - text: Hemen Görsel Üret
+    - generic [ref=e112]:
+      - generic [ref=e113]: © 2026 MBG - Moda Burada Galerisi
+      - generic [ref=e114]: Powered by DeepMind Antigravity
