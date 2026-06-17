@@ -1,5 +1,5 @@
 import { GoogleGenAI, Type } from "@google/genai";
-import { getActiveDb, handleFirestoreError, OperationType } from "./firebase";
+import { getActiveDb, markCurrentDbExhausted } from "./firebase";
 import { collection, addDoc } from "firebase/firestore";
 
 const PRIMARY_IMAGE_MODEL = "gemini-2.5-flash-image";
@@ -200,6 +200,7 @@ export async function generateNewPiece(langCode: string = 'TR', forcedTimestamp?
   while (attempts < maxAttempts) {
     attempts++;
     try {
+      const currentImageModel = getActiveImageModel();
       let selectedModelType = "";
       try {
         const lastIndexStr = localStorage.getItem("high_fashion_last_model_index");
@@ -320,7 +321,6 @@ export async function generateNewPiece(langCode: string = 'TR', forcedTimestamp?
       }
 
       // 2. Generate high-quality image using the ENGLISH prompt
-      const currentImageModel = getActiveImageModel();
       const imageResponse = await ai.models.generateContent({
         model: currentImageModel,
         contents: {
@@ -385,8 +385,11 @@ export async function generateNewPiece(langCode: string = 'TR', forcedTimestamp?
         const docRef = await addDoc(collection(getActiveDb(), "entries"), piece);
         return { ...piece, id: docRef.id };
       } catch (error) {
-        handleFirestoreError(error, OperationType.CREATE, "entries");
-        return { ...piece, id: crypto.randomUUID() };
+        console.error("Firestore save failed, using local fallback:", error);
+        if (error instanceof Error && (error.message.includes('quota') || error.message.includes('RESOURCE_EXHAUSTED'))) {
+          markCurrentDbExhausted();
+        }
+        return { ...piece, id: `local_${crypto.randomUUID()}` };
       }
 
     } catch (error: any) {

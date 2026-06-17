@@ -883,7 +883,11 @@ export default function App() {
       const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setComments(docs);
     }, (err) => {
-      handleFirestoreError(err, OperationType.LIST, 'comments');
+      console.error("Comments onSnapshot error:", err);
+      if (err instanceof Error && (err.message.includes('quota') || err.message.includes('RESOURCE_EXHAUSTED'))) {
+        markCurrentDbExhausted();
+      }
+      setComments([]);
     });
     return () => unsubscribe();
   }, [dbVersion]);
@@ -958,6 +962,7 @@ export default function App() {
   };
 
   const isGeneratingRef = useRef(false);
+  const localEntriesRef = useRef<ContentEntry[]>([]);
 
   const handleDelete = async (id: string, e?: React.MouseEvent) => {
     if (e) {
@@ -1199,7 +1204,9 @@ export default function App() {
         markCurrentDbExhausted();
       }
       console.warn("Firestore collection load failed or empty. Sourcing curated archive assets locally.", error);
-      setEntries(getFallbackEntries());
+      const fallback = getFallbackEntries();
+      const local = localEntriesRef.current;
+      setEntries(local.length > 0 ? [...local, ...fallback] : fallback);
       setLoading(false);
     });
 
@@ -1246,8 +1253,14 @@ export default function App() {
               ? Math.floor(lastItem.timestamp / 3600000) * 3600000 + 3600000
               : Math.floor(now / 3600000) * 3600000);
 
-        await generateNewPiece(currentLang.code, nextHourTimestamp);
-        // The onSnapshot will update entries and the sync useEffect will handle the countdown
+        const newPiece = await generateNewPiece(currentLang.code, nextHourTimestamp);
+        if (newPiece && newPiece.id.startsWith('local_')) {
+          localEntriesRef.current = [newPiece, ...localEntriesRef.current];
+          setEntries(prev => {
+            const exists = prev.some(e => e.id === newPiece.id);
+            return exists ? prev : [newPiece, ...prev];
+          });
+        }
       } catch (error: any) {
         console.error("Critical Generation Error:", error);
         if (error?.message?.includes("RESOURCE_EXHAUSTED") || JSON.stringify(error).includes("429")) {

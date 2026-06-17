@@ -35,7 +35,10 @@ function getActiveDbInstance(): Firestore {
 export function markCurrentDbExhausted(): void {
   try {
     const idx = getActiveDbIndex();
-    localStorage.setItem(`${EXHAUSTED_PREFIX}${idx}`, Date.now().toString());
+    const now = Date.now();
+    const prev = parseInt(localStorage.getItem(`${EXHAUSTED_PREFIX}${idx}`) || '0', 10);
+    if (now - prev < 60000) return; // already marked within last minute
+    localStorage.setItem(`${EXHAUSTED_PREFIX}${idx}`, now.toString());
     window.dispatchEvent(new CustomEvent('firestore-db-switched'));
   } catch (_) {
   }
