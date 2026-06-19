@@ -637,58 +637,116 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
         {tab === 'delete-requests' && (
           <div className="flex-1 overflow-y-auto custom-scrollbar p-6">
             <h2 className="text-lg font-black text-white mb-2">Silme İstekleri</h2>
-            <p className="text-[10px] text-slate-500 font-bold mb-6">Kullanıcıların sildiği mesajların onay bekleyen talepleri. Onaylarsanız kalıcı olarak silinir, reddederseniz mesaj geri yüklenir.</p>
+            <p className="text-[10px] text-slate-500 font-bold mb-6">Mesaj, grup ve sohbet silme talepleri. Onaylarsanız kalıcı olarak silinir, reddederseniz veri korunur.</p>
             {deleteRequests.filter(r => r.status === 'pending').length === 0 ? (
               <p className="text-slate-500 text-sm font-bold">Bekleyen silme isteği yok.</p>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {deleteRequests.filter(r => r.status === 'pending').map((req) => {
+                  const isGroupDelete = req.type === 'group-auto-delete';
                   const reqUser = users.find(u => u.uid === req.requestedBy);
+                  
+                  if (isGroupDelete) {
+                    const msgCount = req.messages?.length || 0;
+                    const chatInfo = req.chatData || {};
+                    const participants = chatInfo.participants || [];
+                    return (
+                      <div key={req.id} className="bg-slate-800 rounded-2xl p-4 border border-red-700/50">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Trash2 size={14} className="text-red-500" />
+                          <span className="text-xs font-bold text-red-400">Grup Otomatik Silindi</span>
+                          <span className="text-[10px] text-slate-500 ml-auto">{req.timestamp?.toDate ? format(req.timestamp.toDate(), 'dd.MM HH:mm') : ''}</span>
+                        </div>
+                        <div className="mb-3 space-y-1">
+                          <p className="text-sm font-bold text-slate-200">{chatInfo.groupMetadata?.name || 'İsimsiz Grup'}</p>
+                          <p className="text-[10px] text-slate-400 font-bold">{msgCount} mesaj · {participants.length} katılımcı</p>
+                          <p className="text-[10px] text-slate-500">Grup ID: {req.chatId?.slice(0, 20)}...</p>
+                        </div>
+                        <div className="bg-slate-900/50 rounded-xl p-3 mb-3 max-h-32 overflow-y-auto">
+                          <p className="text-[9px] text-slate-500 font-bold mb-2">YEDEKLENEN MESAJLAR ({msgCount})</p>
+                          {req.messages?.slice(0, 10).map((msg: any, i: number) => (
+                            <p key={i} className="text-[10px] text-slate-400 truncate border-b border-slate-700/50 py-1 last:border-0">
+                              <span className="text-slate-500">{msg.senderId?.slice(0,6)}:</span> {msg.text || (msg.type === 'image' ? '📷' : msg.type === 'video' ? '🎥' : msg.type === 'audio' ? '🎤' : '📄')}
+                            </p>
+                          ))}
+                          {msgCount > 10 && <p className="text-[10px] text-slate-600 pt-1">...ve {msgCount - 10} mesaj daha</p>}
+                        </div>
+                        <div className="flex gap-2">
+                          <button onClick={async () => {
+                              try {
+                                await updateDoc(doc(db, 'adminDeleteRequests', req.id), { status: 'approved' });
+                                // Group data is already deleted, just mark as approved
+                              } catch (e) { console.error(e); }
+                            }}
+                            className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-[10px] font-bold">
+                            Silmeyi Onayla ✅
+                          </button>
+                          <button onClick={async () => {
+                              try {
+                                await updateDoc(doc(db, 'adminDeleteRequests', req.id), { status: 'rejected' });
+                              } catch (e) { console.error(e); }
+                            }}
+                            className="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-[10px] font-bold">
+                            Reddet (Veri Kalsın)
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  }
+                  
+                  // Regular message delete requests
+                  const reqUserDisplay = users.find(u => u.uid === req.requestedBy);
                   return (
                     <div key={req.id} className="bg-slate-800 rounded-2xl p-4 border border-amber-700/50">
                       <div className="flex items-center gap-2 mb-2">
                         <Trash2 size={14} className="text-amber-500" />
-                        <span className="text-xs font-bold text-amber-400">{reqUser?.displayName || req.requestedBy?.slice(0, 8)}</span>
+                        <span className="text-xs font-bold text-amber-400">{reqUserDisplay?.displayName || req.requestedBy?.slice(0, 8)}</span>
                         <span className="text-[10px] text-slate-500">tarafından silindi</span>
                         <span className="text-[10px] text-slate-500 ml-auto">{req.timestamp?.toDate ? format(req.timestamp.toDate(), 'dd.MM HH:mm') : ''}</span>
                       </div>
                       <div className="flex items-center gap-2 mb-3">
                         <span className="text-[10px] text-slate-400 font-bold">Sohbet: {req.chatId?.slice(0, 12)}...</span>
-                        <span className="text-[10px] text-slate-400 font-bold">• {req.participants?.length || 0} katılımcı</span>
                       </div>
                       <div className="flex gap-2">
-                        <button
-                          onClick={async () => {
+                        <button onClick={async () => {
                             try {
                               await deleteDoc(doc(db, 'chats', req.chatId, 'messages', req.msgId));
                               await updateDoc(doc(db, 'adminDeleteRequests', req.id), { status: 'approved' });
-                            } catch (e) {
-                              console.error("Approve delete error:", e);
-                            }
+                            } catch (e) { console.error(e); }
                           }}
-                          className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-[10px] font-bold"
-                        >
+                          className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-[10px] font-bold">
                           Kalıcı Sil ✅
                         </button>
-                        <button
-                          onClick={async () => {
+                        <button onClick={async () => {
                             try {
-                              await updateDoc(doc(db, 'chats', req.chatId, 'messages', req.msgId), {
-                                deletedBy: []
-                              });
+                              await updateDoc(doc(db, 'chats', req.chatId, 'messages', req.msgId), { deletedBy: [] });
                               await updateDoc(doc(db, 'adminDeleteRequests', req.id), { status: 'rejected' });
-                            } catch (e) {
-                              console.error("Reject delete error:", e);
-                            }
+                            } catch (e) { console.error(e); }
                           }}
-                          className="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded-lg text-[10px] font-bold"
-                        >
+                          className="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded-lg text-[10px] font-bold">
                           Geri Yükle 🔄
                         </button>
                       </div>
                     </div>
                   );
                 })}
+              </div>
+            )}
+            {/* Show approved/rejected history */}
+            {deleteRequests.filter(r => r.status !== 'pending').length > 0 && (
+              <div className="mt-8">
+                <h3 className="text-sm font-black text-slate-400 mb-4 uppercase tracking-wider">Geçmiş İşlemler</h3>
+                <div className="space-y-2">
+                  {deleteRequests.filter(r => r.status !== 'pending').slice(0, 10).map((req) => (
+                    <div key={req.id} className="bg-slate-800/50 rounded-xl p-3 border border-slate-700 flex items-center gap-3">
+                      <div className={cn("w-2 h-2 rounded-full", req.status === 'approved' ? "bg-red-500" : "bg-green-500")} />
+                      <span className="text-[10px] text-slate-400 font-bold flex-1">
+                        {req.type === 'group-auto-delete' ? 'Grup Silme' : 'Mesaj Silme'} - {req.status === 'approved' ? 'Onaylandı' : 'Reddedildi'}
+                      </span>
+                      <span className="text-[9px] text-slate-600">{req.timestamp?.toDate ? format(req.timestamp.toDate(), 'dd.MM') : ''}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>
