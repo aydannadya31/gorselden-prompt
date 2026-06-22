@@ -104,6 +104,9 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ chatId }) => {
   const [encryptMode, setEncryptMode] = useState(false);
   const [decryptModal, setDecryptModal] = useState<Message | null>(null);
 
+  // Upload menu state
+  const [showUploadMenu, setShowUploadMenu] = useState(false);
+
   // Group admin state
   const [showGroupAdmin, setShowGroupAdmin] = useState(false);
   const [editGroupName, setEditGroupName] = useState('');
@@ -1035,7 +1038,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ chatId }) => {
               className="hover:text-amber-500 transition-colors p-1 rounded-full hover:bg-amber-50 text-slate-400"
               title="Grup Yönetimi"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+              <Shield size={18} />
             </button>
           )}
 
@@ -1456,21 +1459,45 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ chatId }) => {
             )}
           </div>
 
-          <button 
-            type="button" 
-            onClick={handleImageSend}
-            className="p-2 text-slate-400 hover:text-slate-600 transition-colors"
-          >
-            <Image size={20} />
-          </button>
-          <button 
-            type="button" 
-            onClick={handleVideoSend}
-            className="p-2 text-slate-400 hover:text-slate-600 transition-colors"
-            title="Video Yükle"
-          >
-            <Video size={20} />
-          </button>
+          <div className="relative">
+            <button 
+              type="button" 
+              onClick={() => { imageInputRef.current?.click(); setShowUploadMenu(false); }}
+              className="p-2 text-slate-400 hover:text-slate-600 transition-colors"
+              title="Fotoğraf/Video Yükle"
+            >
+              <Image size={20} />
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowUploadMenu(!showUploadMenu)}
+              className="p-1 text-slate-400 hover:text-slate-600 transition-colors absolute -bottom-1 -right-1 bg-white rounded-full shadow-sm border border-slate-200 w-4 h-4 flex items-center justify-center"
+              title="Dosya Seçenekleri"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            {showUploadMenu && (
+              <>
+                <div className="fixed inset-0 z-30" onClick={() => setShowUploadMenu(false)} />
+                <div className="absolute bottom-12 left-0 w-44 bg-white border border-slate-150 rounded-2xl shadow-xl py-1 z-40 animate-in fade-in slide-in-from-bottom-2 duration-150">
+                  <button
+                    type="button"
+                    onClick={() => { imageInputRef.current?.click(); setShowUploadMenu(false); }}
+                    className="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2 transition-colors"
+                  >
+                    <Image size={14} /> Fotoğraf Yükle
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { videoInputRef.current?.click(); setShowUploadMenu(false); }}
+                    className="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2 transition-colors"
+                  >
+                    <Video size={14} /> Video Yükle
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
 
           {isVideoRecording ? (
             <div className="flex items-center gap-3 px-4 py-1 bg-red-50 text-red-600 rounded-xl animate-in fade-in zoom-in-95 duration-200">
@@ -1486,7 +1513,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ chatId }) => {
               className="p-2 text-slate-400 hover:text-red-500 transition-colors"
               title="Video Kaydet"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+              <Video size={20} />
             </button>
           )}
 
