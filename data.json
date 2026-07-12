@@ -32,6 +32,15 @@
         "source": "İstemci (Canvas)",
         "date": 1781701247980
       }
+    ],
+    "aydannadya@gmail.com": [
+      {
+        "model": "nano-gemini",
+        "ref": "yes",
+        "prompt": "\"Referans görselindeki modelin yüzü kesinlikle değişmeden ve bozulmadan kimliği kitli şekilde anatomik bozulmalar olmadan 4k yüksek çözünürlüklü ve yüksek kalite detaylar ile aşağıda verilmiş prompt detaylarına göre yeniden düzenlenecektir.\"\n\nA highly detailed professional photograph. a professional photograph featuring an artistic composition. landscape scene with a clearly defined horizon line in the lower third of the frame. dramatic lighting with brighter foreground elements contrasting against a darker sky. very smooth image with minimal texture, possibly out-of-focus background or uniform surface like sky or water. vertical portrait-oriented composition with tall narrow framing, emphasizing height and vertical elements. soft natural balanced lighting with smooth tonal gradations across the entire dynamic range. moderate exposure, neutral brightness. moderately saturated natural colors. dominant color: navy blue, with secondary tones of navy blue, vibrant cerulean blue, off-white / cream. color palette: #6888b8, #5878a8, #7898c8, #e8e8e8, #5878b8. cool color temperature dominates, with blue and cyan undertones creating a calm crisp atmosphere. cool blue-dominant harmony suggesting water, sky or nighttime setting. bright peripheral areas framing a darker central region, creating an inverted vignette or spotlight effect around the edges. lower portion is significantly brighter, suggesting reflective ground or foreground lighting. Aspect ratio 0.56, 2.4 megapixel resolution. 4K, ultra high definition, highly detailed texture rendering, tack-sharp focus, photorealistic quality, professional photography, premium studio quality. Ultra high resolution image with exceptional clarity and fine detail reproduction.",
+        "source": "İstemci (Canvas)",
+        "date": 1783860056446
+      }
     ]
   },
   "activity": {
